@@ -33,15 +33,15 @@ In order to merge the datasets together, certain data needs to be converted to a
 
 First, certain numerical data must be converted to ranges to allow a categorical decision to be made.
 
-Logins/Year: `<5`, `5-10`, `10-15`, `15-20`, `20+`
-Applications/Year: `<5`, `5-10`, `10-15`, `15-20`, `20-30`, `30-50`, `50+`
-Events/Year: `1`, `2`, `3`, `4`, `5+`
-Walk-Ins/Year: `0`, `1`, `2`, `3`, `4+`
-Appointments/Year: `0`, `1`, `2`, `3`, `4+`
-Years Attended: `0`, `1`, `2`, `3`, `4+`
-Weeks Since Last Login: `<1`, `1-2`, `2-4`, `4-8`, `8-16`, `16+`
-Years Until Graduation: `0`, `1`, `2`, `3`, `4+`
-GPA: `0-1.0`, `1.0-1.5`, `1.5-2.0`, `2.0-2.5`, `2.5-3.0`, `3.0-3.5`, `3.5-4.0`
+- Logins/Year: `<5`, `5-10`, `10-15`, `15-20`, `20+`
+- Applications/Year: `<5`, `5-10`, `10-15`, `15-20`, `20-30`, `30-50`, `50+`
+- Events/Year: `1`, `2`, `3`, `4`, `5+`
+- Walk-Ins/Year: `0`, `1`, `2`, `3`, `4+`
+- Appointments/Year: `0`, `1`, `2`, `3`, `4+`
+- Years Attended: `0`, `1`, `2`, `3`, `4+`
+- Weeks Since Last Login: `<1`, `1-2`, `2-4`, `4-8`, `8-16`, `16+`
+- Years Until Graduation: `0`, `1`, `2`, `3`, `4+`
+- GPA: `0-1.0`, `1.0-1.5`, `1.5-2.0`, `2.0-2.5`, `2.5-3.0`, `3.0-3.5`, `3.5-4.0`
 
 Then, certain categorical data must be converted to a format that can be used for analysis.
 
