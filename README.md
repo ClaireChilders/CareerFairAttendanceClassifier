@@ -79,15 +79,15 @@ The first implementation of the model uses the basic student data to predict whe
 
 ### Results
 
-![](https://i.imgur.com/AzdpM9O.png)
+![](https://i.imgur.com/05GEzum.png)
 
 In 5 tests of training the model, the average metrics are as follows:
 
-- Mean Squared Error: 0.0422
-- Accuracy: 0.9578
-- F1 Score: 0.7964
-- Recall: 0.7996
-- Precision: 0.7933
+- Mean Squared Error: 0.0411
+- Accuracy: 0.9589
+- F1 Score: 0.8028
+- Recall: 0.8095
+- Precision: 0.7963
 
 The model has a high accuracy and low mean squared error, but the F1 score is lower than desired. This is likely due to the class imbalance in the data. The model is predicting that most students will not attend a career fair, which is accurate, but it is not predicting that many students will attend a career fair, which is not accurate. This is likely due to the fact that the model is not taking into account any information specific to the student or any time dependencies in the data.
 
