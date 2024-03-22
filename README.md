@@ -50,3 +50,44 @@ Majors: Each major is converted to a binary value indicating whether or not the 
 ## Model
 
 Currently using a decision tree model, but considering trying out a random forest model as well
+
+## First Implementation
+
+The first implementation of the model uses the basic student data to predict whether or not a student will attend a career fair. The model is trained on this student data without any consideration for time dependencies or information specific to that student. The model is then tested on the same data to see how well it performs.
+
+### Data Cleaning
+
+- Yes/No values are converted to 1/0
+- Null values are filled with 0
+- Strings are converted to numerical values
+- Dates converted to years
+- Categorical data is converted to dummy variables
+- Data is split into training and testing sets (test size = 0.2)
+
+### Hyperparamters
+
+- Entropy is used as the criterion
+- The maximum depth of the tree is 5
+- The minimum number of samples required to split an internal node is 2
+- The minimum number of samples required to be at a leaf node is 1
+- No minimum weight fraction required to be a leaf node
+- No minimum impurity decrease required to split an internal node
+- No maximum leaf nodes
+- No maximum features
+- All classes are weighted equally
+- Choosing the best split
+
+### Results
+
+![](https://i.imgur.com/AzdpM9O.png)
+
+In 5 tests of training the model, the average metrics are as follows:
+
+- Mean Squared Error: 0.0422
+- Accuracy: 0.9578
+- F1 Score: 0.7964
+- Recall: 0.7996
+- Precision: 0.7933
+
+The model has a high accuracy and low mean squared error, but the F1 score is lower than desired. This is likely due to the class imbalance in the data. The model is predicting that most students will not attend a career fair, which is accurate, but it is not predicting that many students will attend a career fair, which is not accurate. This is likely due to the fact that the model is not taking into account any information specific to the student or any time dependencies in the data.
+
