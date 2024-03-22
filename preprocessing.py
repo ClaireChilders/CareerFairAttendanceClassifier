@@ -79,6 +79,8 @@ def clean_data(data):
 
     print(Fore.GREEN + "Data cleaned" + Style.RESET_ALL)
 
+    return data
+
 
 def extract_features_target(data):
     print(f'{Fore.MAGENTA}\nExtracting features and target...'
