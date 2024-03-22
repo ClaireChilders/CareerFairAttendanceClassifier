@@ -91,3 +91,32 @@ In 5 tests of training the model, the average metrics are as follows:
 
 The model has a high accuracy and low mean squared error, but the F1 score is lower than desired. This is likely due to the class imbalance in the data. The model is predicting that most students will not attend a career fair, which is accurate, but it is not predicting that many students will attend a career fair, which is not accurate. This is likely due to the fact that the model is not taking into account any information specific to the student or any time dependencies in the data.
 
+## Second Implementation
+
+In the first implementation we used the entire data set to both train and test the model. This is not realistic because in practice we would not have access to the data for the career fair we are trying to predict attendance for. In the second implementation we will split the data up into two separate test data sets, one for evaluating the model and one for testing the model with new data. We do this to simulate a real world scenario to see if the model can apply to new data.
+
+### Issues
+
+Since the data is split into two separate data sets the features of the training and testing sets will be different. For example, with categorical data like majors if a major appears in the training dataset but not in the testing dataset (i.e., there was no student in winter 2024 with that same major), there will be a feature mismatch which causes an error.
+
+To overcome this, feature alignment had to be implemented. This goes through each feature of the two datasets and adds any missing from the other so the features are the same and can be compared.
+
+### Data Cleaning
+
+- The data is split into two separate data sets, one for training and one for practical testing
+- The training data contains all career fair attendance data up to the 2024 winter career fair
+- The practical testing data contains the career fair attendance data for the 2024 winter career fair
+- The training and testing data are cleaned in the same way as the first implementation, then feature aligned
+- The training data is split into training and testing sets (test size = 0.2)
+
+### Hyperparameters
+
+- The hyperparameters are the same as the first implementation
+
+### Results
+
+![](https://i.imgur.com/xovOkSg.png)
+
+As we can see, the results with the training data are very similar to the first implementation. However, the model did not fit very well for the new data. With an accuracy of 0.5604, this is only slightly better than random chance.
+
+This could be due to the fact that the model is not taking into account any information specific to the student or any time dependencies in the data.
