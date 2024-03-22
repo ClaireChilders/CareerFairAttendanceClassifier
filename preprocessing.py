@@ -119,3 +119,71 @@ def split_data(features, target, test_size):
     print(f'{Fore.GREEN}Data split{Style.RESET_ALL}')
 
     return x_train, x_test, y_train, y_test
+
+
+def align_features(train_data: pd.DataFrame, test_data: pd.DataFrame):
+    all_features = set(train_data.columns) | set(test_data.columns)
+    print(f'{Fore.MAGENTA}\nAligning {len(all_features)} features '
+          f'between train and test data{Style.RESET_ALL}')
+
+    train_missing: set = all_features - set(train_data.columns)
+    test_missing: set = all_features - set(test_data.columns)
+    count = len(train_missing) + len(test_missing)
+
+    if len(train_missing) > 0:
+        print(f'  {Fore.LIGHTYELLOW_EX}{len(train_missing)}{Fore.RED} '
+              f'Features missing from training data{Style.RESET_ALL}')
+        train_data = train_data.reindex(columns=all_features, fill_value=0)
+    if len(test_missing) > 0:
+        print(f'  {Fore.LIGHTYELLOW_EX}{len(test_missing)}{Fore.RED} '
+              f'Features missing from testing data{Style.RESET_ALL}')
+        test_data = test_data.reindex(columns=all_features, fill_value=0)
+
+    # Ensure the column are in the same order
+    test_data = test_data[train_data.columns]
+
+    print(f'{Fore.CYAN}{count}{Fore.GREEN} Features aligned{Style.RESET_ALL}')
+
+    return train_data, test_data
+
+
+def split_practical_data(data: pd.DataFrame, test_career_fair_name: str):
+    print(f'{Fore.BLUE}Splitting test and training data by '
+          f'{Fore.CYAN}{test_career_fair_name}{Style.RESET_ALL}')
+
+    training_data = data[
+        (data['career_fair_name'] != test_career_fair_name)
+    ]
+    testing_data = data[
+        (data['career_fair_name'] == test_career_fair_name)
+    ]
+
+    training_data, testing_data = align_features(training_data, testing_data)
+
+    print(f'{Fore.GREEN}Data successfully split into testing and training '
+          f'data by {Fore.CYAN}{test_career_fair_name}{Style.RESET_ALL}')
+
+    return training_data, testing_data
+
+
+def get_practical_test(
+    data: pd.DataFrame,
+    test_career_fair_name: str,
+    test_size: float
+):
+    print(f'{Fore.MAGENTA}\nPreparing practical test data...{Style.RESET_ALL}')
+
+    training_data, testing_data = split_practical_data(
+        data, test_career_fair_name)
+
+    features, target = extract_features_target(training_data)
+    x_practical_test, y_practical_test = extract_features_target(testing_data)
+
+    features, x_practical_test = align_features(features, x_practical_test)
+
+    x_train, x_test, y_train, y_test = split_data(
+        features, target, test_size)
+
+    print(f'{Fore.GREEN}Practical test data prepared{Style.RESET_ALL}')
+
+    return x_train, x_test, y_train, y_test, x_practical_test, y_practical_test
