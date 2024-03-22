@@ -107,7 +107,7 @@ def split_data(features, target, test_size):
     print(f"{Fore.BLUE}  Test size: {Fore.CYAN}{test_size}" + Style.RESET_ALL)
 
     x_train, x_test, y_train, y_test = train_test_split(
-        features, target, test_size, random_state=0)
+        features, target, test_size=test_size, random_state=0)
 
     print(f'{Fore.GREEN}Data split{Style.RESET_ALL}')
 
