@@ -3,7 +3,7 @@ from hyperparameters import implementation_1_hyperparameters
 from preprocessing import (
     load_data,
     clean_data,
-    get_features_target,
+    extract_features_target,
     split_data
 )
 from sklearn.tree import DecisionTreeClassifier
@@ -21,7 +21,7 @@ from colorama import Fore, Style
 # =============================================================================
 data = load_data()
 cleaned_data = clean_data(data)
-features, target = get_features_target(data)
+features, target = extract_features_target(data)
 x_train, x_test, y_train, y_test = split_data(features, target, 0.2)
 
 # =============================================================================

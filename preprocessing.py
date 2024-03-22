@@ -80,7 +80,10 @@ def clean_data(data):
     print(Fore.GREEN + "Data cleaned" + Style.RESET_ALL)
 
 
-def get_features_target(data):
+def extract_features_target(data):
+    print(f'{Fore.MAGENTA}\nExtracting features and target...'
+          f'{Style.RESET_ALL}')
+
     features = pd.get_dummies(
         data.drop(
             ['stu_id', 'is_checked_in'], axis=1
@@ -94,10 +97,12 @@ def get_features_target(data):
         ]
     )
 
-    print(f'{Fore.BLUE}  Categorical features converted to dummies'
+    print(f'  {Fore.BLUE}  Categorical features converted to dummies'
           f'{Style.RESET_ALL}')
 
     target = data['is_checked_in']
+
+    print(f'{Fore.GREEN}Features and target extracted{Style.RESET_ALL}')
 
     return features, target
 
