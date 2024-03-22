@@ -1,0 +1,28 @@
+{
+    "configured_hyperparameters": {
+        "criterion": "gini",
+        "splitter": "best",
+        "max_depth": null,
+        "min_samples_split": 2,
+        "min_samples_leaf": 1,
+        "min_weight_fraction_leaf": 0.0,
+        "max_features": null,
+        "random_state": null,
+        "max_leaf_nodes": null,
+        "min_impurity_decrease": 0.0,
+        "class_weight": null
+    },
+    "DecisionTreeClassifier": {
+        "criterion": ["gini", "entropy"],
+        "splitter": ["best", "random"],
+        "max_depth": [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        "min_samples_split": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+        "min_samples_leaf": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        "min_weight_fraction_leaf": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
+        "max_features": [null, "sqrt", "log2"],
+        "random_state": [null, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        "max_leaf_nodes": [null, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        "min_impurity_decrease": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
+        "class_weight": [null, "balanced"]
+    }
+}
