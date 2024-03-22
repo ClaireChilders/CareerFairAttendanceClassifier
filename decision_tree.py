@@ -1,5 +1,5 @@
-import time
 from hyperparameters import implementation_1_hyperparameters
+from time import time
 from preprocessing import (
     get_practical_test,
     load_data,
@@ -45,7 +45,7 @@ model_count = 5
 avg_accuracy, avg_mse, avg_f1, avg_recall, avg_precision = 0, 0, 0, 0, 0
 avg_practical_accuracy, avg_practical_mse, avg_practical_f1, avg_positive_predicted = 0, 0, 0, 0
 time_elapsed = 0
-start_time = time.time()
+start_time = time()
 
 # =============================================================================
 #                           Train and evaluate models
@@ -59,7 +59,7 @@ def evaluate_model(
     start_time,
     time_elapsed
 ):
-    time_taken = time.time() - start_time - time_elapsed
+    time_taken = time() - start_time - time_elapsed
     print(f'{Fore.GREEN}  Model {i+1} trained in '
           f'{time_taken:.2f} seconds' + Style.RESET_ALL)
 
