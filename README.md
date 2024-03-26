@@ -120,3 +120,16 @@ To overcome this, feature alignment had to be implemented. This goes through eac
 As we can see, the results with the training data are very similar to the first implementation. However, the model did not fit very well for the new data. With an accuracy of 0.5604, this is only slightly better than random chance.
 
 This could be due to the fact that the model is not taking into account any information specific to the student or any time dependencies in the data.
+
+## Third Implementation
+
+In the third implementation, we will be tuning the hyperparameters of the model to see if we can get better results.
+
+To do this, I trained 500 decision trees with the same data, but selected random hyperparameters for each tree. Each model was evaluated and scored based on its performance with the testing and practical data. The model with the best performance was then selected as the final model.
+
+### Results
+
+Most parameters did not seem to affect the performance of the model, but when `max_leaf_nodes` was larger, the model performed significantly worse.
+
+A `max_leaf_nodes` of 2 was selected as the best hyperparameter for the model.
+
