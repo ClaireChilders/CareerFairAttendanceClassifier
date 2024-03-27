@@ -120,3 +120,11 @@ To overcome this, feature alignment had to be implemented. This goes through eac
 As we can see, the results with the training data are very similar to the first implementation. However, the model did not fit very well for the new data. With an accuracy of 0.5604, this is only slightly better than random chance.
 
 This could be due to the fact that the model is not taking into account any information specific to the student or any time dependencies in the data.
+
+## Third Implementation
+
+## Fourth Implementation
+
+So far, we still see that the model is not fitting well for new data. In other words, we have a high variance problem where the model is overfitting the training data. One way to reduce overfitting is to reduce the number of features. Currently, the dataset ends up having a VERY large number of features. Each unique categorical value is its own feature, which adds up to over 4000 features. So, we will try to reduce the number of features by grouping certain categorical values together to be represented by a single feature.
+
+I am also considering trying out a random forest model instead of a decision tree after some research. This would allow the use of multiple decision trees to make a prediction, which might help to reduce overfitting.
