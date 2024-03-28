@@ -4,9 +4,6 @@ from preprocessing import (
     get_practical_test,
     load_data,
     clean_data,
-    # extract_features_target,
-    # split_data,
-    split_practical_data
 )
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import (
@@ -21,8 +18,7 @@ from colorama import Fore, Style
 # =============================================================================
 #                           Load and preprocess data
 # =============================================================================
-data = load_data()
-cleaned_data = clean_data(data)
+cleaned_data = clean_data(*load_data())
 
 # features, target = extract_features_target(cleaned_data)
 # x_train, x_test, y_train, y_test = split_data(features, target, 0.2)
@@ -43,7 +39,8 @@ cleaned_data = clean_data(data)
 # =============================================================================
 model_count = 5
 avg_accuracy, avg_mse, avg_f1, avg_recall, avg_precision = 0, 0, 0, 0, 0
-avg_practical_accuracy, avg_practical_mse, avg_practical_f1, avg_positive_predicted = 0, 0, 0, 0
+(avg_practical_accuracy, avg_practical_mse,
+ avg_practical_f1, avg_positive_predicted) = 0, 0, 0, 0
 time_elapsed = 0
 start_time = time.time()
 
