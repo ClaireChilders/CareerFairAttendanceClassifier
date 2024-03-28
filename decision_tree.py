@@ -18,8 +18,7 @@ from colorama import Fore, Style
 # =============================================================================
 #                           Load and preprocess data
 # =============================================================================
-data = load_data()
-cleaned_data = clean_data(data)
+cleaned_data = clean_data(*load_data())
 
 # features, target = extract_features_target(cleaned_data)
 # x_train, x_test, y_train, y_test = split_data(features, target, 0.2)
