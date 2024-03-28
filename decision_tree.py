@@ -39,7 +39,8 @@ cleaned_data = clean_data(*load_data())
 # =============================================================================
 model_count = 5
 avg_accuracy, avg_mse, avg_f1, avg_recall, avg_precision = 0, 0, 0, 0, 0
-avg_practical_accuracy, avg_practical_mse, avg_practical_f1, avg_positive_predicted = 0, 0, 0, 0
+(avg_practical_accuracy, avg_practical_mse,
+ avg_practical_f1, avg_positive_predicted) = 0, 0, 0, 0
 time_elapsed = 0
 start_time = time.time()
 
