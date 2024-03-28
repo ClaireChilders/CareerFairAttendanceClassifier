@@ -4,9 +4,6 @@ from preprocessing import (
     get_practical_test,
     load_data,
     clean_data,
-    # extract_features_target,
-    # split_data,
-    split_practical_data
 )
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import (
