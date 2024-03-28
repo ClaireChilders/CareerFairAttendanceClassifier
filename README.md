@@ -128,3 +128,27 @@ This could be due to the fact that the model is not taking into account any info
 So far, we still see that the model is not fitting well for new data. In other words, we have a high variance problem where the model is overfitting the training data. One way to reduce overfitting is to reduce the number of features. Currently, the dataset ends up having a VERY large number of features. Each unique categorical value is its own feature, which adds up to over 4000 features. So, we will try to reduce the number of features by grouping certain categorical values together to be represented by a single feature.
 
 I am also considering trying out a random forest model instead of a decision tree after some research. This would allow the use of multiple decision trees to make a prediction, which might help to reduce overfitting.
+
+## Fifth Implementation
+
+After trying out many options to reduce the overfitting of the decision tree model, I decided to try out a random forest model instead. This model uses multiple decision trees to make a prediction, which can help to reduce overfitting.
+
+With this model however, I jumped right into hyperparameter tuning to ensure the model was as accurate as possible. I used a grid search to try to find the best hyperparameters for the model. The reason I did this immediately was to ensure the model did in fact perform better than the decision tree model before committing more effort into it.
+
+The hyperparameters tuned were:
+
+- `max_depth`: [None, 10, 100, 1000]
+- `min_samples_leaf`: [1, 2, 4]
+- `min_samples_split`: [2, 5, 10]
+- `n_estimators`: [10, 100, 1000]
+
+### Results
+
+The best hyperparameters found were:
+
+- Max Depth: None
+- Min Samples Leaf: 1
+- Min Samples Split: 5
+- N Estimators: 1000
+
+Using a model with these hyperparameters, the results were:
