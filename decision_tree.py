@@ -1,4 +1,7 @@
+import os
 import time
+
+import pandas as pd
 from hyperparameters import implementation_1_hyperparameters
 from preprocessing import (
     get_practical_test,
@@ -18,7 +21,12 @@ from colorama import Fore, Style
 # =============================================================================
 #                           Load and preprocess data
 # =============================================================================
-cleaned_data = clean_data(*load_data())
+
+if 'data/cleaned_data.csv' in os.listdir():
+    cleaned_data = pd.read_csv('data/cleaned_data.csv')
+else:
+    cleaned_data = clean_data(*load_data())
+    cleaned_data.to_csv('data/cleaned_data.csv', index=False)
 
 # features, target = extract_features_target(cleaned_data)
 # x_train, x_test, y_train, y_test = split_data(features, target, 0.2)
