@@ -22,11 +22,16 @@ from colorama import Fore, Style
 #                           Load and preprocess data
 # =============================================================================
 
-if 'data/cleaned_data.csv' in os.listdir():
-    cleaned_data = pd.read_csv('data/cleaned_data.csv')
+cleaned_data_file_name = 'cleaned_data.csv'
+
+if 'data' not in os.listdir():
+    os.makedirs('data')
+
+if cleaned_data_file_name in os.listdir('data'):
+    cleaned_data = pd.read_csv(f'data\\{cleaned_data_file_name}')
 else:
     cleaned_data = clean_data(*load_data())
-    cleaned_data.to_csv('data/cleaned_data.csv', index=False)
+    cleaned_data.to_csv(f'data\\{cleaned_data_file_name}', index=False)
 
 # features, target = extract_features_target(cleaned_data)
 # x_train, x_test, y_train, y_test = split_data(features, target, 0.2)
