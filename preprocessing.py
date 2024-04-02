@@ -12,6 +12,12 @@ data_directory = 'data'
 
 
 def load_data() -> pd.DataFrame:
+    """
+    Loads and merges data from multiple CSV files to create a cleaned dataset.
+
+    Returns:
+        pd.DataFrame: The cleaned dataset.
+    """
     print(f'{Fore.MAGENTA}\nLoading data...{Style.RESET_ALL}')
 
     if data_directory not in os.listdir():
@@ -180,6 +186,20 @@ def clean_data(
     data: pd.DataFrame,
     career_fair_df: pd.DataFrame
 ) -> pd.DataFrame:
+    """
+    Cleans the data by filling null values, converting Yes/No values to 1/0,
+      converting strings, dates, school years, colleges, majors, and
+      appointments to binary values.
+
+    Args:
+        data (pd.DataFrame): The input DataFrame containing the data to be
+          cleaned.
+        career_fair_df (pd.DataFrame): The DataFrame containing career fair
+          information.
+
+    Returns:
+        pd.DataFrame: The cleaned DataFrame.
+    """
     print(f'{Fore.MAGENTA}\nCleaning data...{Style.RESET_ALL}')
 
     yes_no_columns = [
@@ -624,6 +644,16 @@ def clean_data(
 
 
 def extract_features_target(data):
+    """
+    Extracts features and target from the given data.
+
+    Parameters:
+        data (DataFrame): The input data containing features and target.
+
+    Returns:
+        features (DataFrame): The extracted features from the data.
+        target (Series): The extracted target from the data.
+    """
     print(f'{Fore.MAGENTA}\n  Extracting features and target...'
           f'{Style.RESET_ALL}')
 
@@ -643,6 +673,21 @@ def extract_features_target(data):
 
 
 def split_data(features, target, test_size):
+    """
+    Split the data into training and testing sets.
+
+    Parameters:
+    features (array-like): The input features.
+    target (array-like): The target variable.
+    test_size (float): The proportion of the dataset to include in the test 
+      split.
+
+    Returns:
+    x_train (array-like): The training features.
+    x_test (array-like): The testing features.
+    y_train (array-like): The training target variable.
+    y_test (array-like): The testing target variable.
+    """
     print(f'{Fore.MAGENTA}\n  Splitting data...{Style.RESET_ALL}')
     print(f'{Fore.BLUE}    Test size: {Fore.CYAN}{test_size}{Style.RESET_ALL}')
 
@@ -655,6 +700,17 @@ def split_data(features, target, test_size):
 
 
 def align_features(train_data: pd.DataFrame, test_data: pd.DataFrame):
+    """
+    Aligns the features between the train and test dataframes.
+
+    Args:
+        train_data (pd.DataFrame): The training data.
+        test_data (pd.DataFrame): The testing data.
+
+    Returns:
+        pd.DataFrame, pd.DataFrame: The aligned training and testing 
+          dataframes.
+    """
     all_features = set(train_data.columns) | set(test_data.columns)
     print(f'{Fore.MAGENTA}\n  Aligning {len(all_features)} features '
           f'between train and test data...{Style.RESET_ALL}')
@@ -682,6 +738,19 @@ def align_features(train_data: pd.DataFrame, test_data: pd.DataFrame):
 
 
 def split_practical_data(data: pd.DataFrame, test_career_fair_name: str):
+    """
+    Split the given data into training and testing data based on the specified 
+      test career fair name.
+
+    Parameters:
+        data (pd.DataFrame): The input data to be split.
+        test_career_fair_name (str): The name of the career fair to be used as 
+          the test data.
+
+    Returns:
+        training_data (pd.DataFrame): The training data after splitting.
+        testing_data (pd.DataFrame): The testing data after splitting.
+    """
     print(f'{Fore.BLUE}  Splitting test and training data by '
           f'{Fore.CYAN}{test_career_fair_name}{Style.RESET_ALL}')
 
@@ -711,6 +780,29 @@ def get_practical_test(
     test_career_fair_name: str,
     test_size: float
 ):
+    """
+    Prepare practical test data for the Career Fair Attendance Classifier.
+
+    Args:
+        data (pd.DataFrame): The cleaned input data containing the attendance
+          records.
+        test_career_fair_name (str): The name of the career fair to be used
+          for practical testing.
+        test_size (float): The proportion of the data from 0 to 1 to be used
+          for testing.
+
+    Returns:
+        tuple: A tuple containing the training and testing data for the
+          classifier.
+            - x_train (pd.DataFrame): The features of the training data.
+            - x_test (pd.DataFrame): The features of the testing data.
+            - y_train (pd.Series): The target labels of the training data.
+            - y_test (pd.Series): The target labels of the testing data.
+            - x_practical_test (pd.DataFrame): The features of the practical
+              test data.
+            - y_practical_test (pd.Series): The target labels of the practical
+              test data.
+    """
     print(f'{Fore.MAGENTA}\nPreparing practical test data...{Style.RESET_ALL}')
 
     training_data, testing_data = split_practical_data(
