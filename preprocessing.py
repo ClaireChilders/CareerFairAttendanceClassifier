@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from colorama import Fore, Style
@@ -6,9 +7,24 @@ from colorama import Fore, Style
 #                           Data Preprocessing
 # =============================================================================
 
+cleaned_data_file_name = 'cleaned_data.csv'
+data_directory = 'data'
 
-def load_data():
+
+def load_data() -> pd.DataFrame:
     print(f'{Fore.MAGENTA}\nLoading data...{Style.RESET_ALL}')
+
+    if data_directory not in os.listdir():
+        os.makedirs(data_directory)
+
+    if cleaned_data_file_name in os.listdir(data_directory):
+        print(f'{Fore.LIGHTBLACK_EX}  → {Fore.BLUE}Loading cleaned '
+              f'data...{Style.RESET_ALL}')
+        cleaned_data = pd.read_csv(
+            f'{data_directory}\\{cleaned_data_file_name}')
+        print(f'{Fore.GREEN}  ✓{Fore.LIGHTCYAN_EX} Cleaned data loaded'
+              f'{Style.RESET_ALL}')
+        return cleaned_data
 
     appointment_df = pd.read_csv('data/appointment_data.csv')
     career_fair_df = pd.read_csv('data/career_fair_data.csv')
@@ -150,10 +166,20 @@ def load_data():
 
     print(f'{Fore.GREEN}✓{Fore.MAGENTA} Data merged{Style.RESET_ALL}')
 
-    return merged_data, career_fair_df
+    cleaned_data = clean_data(merged_data, career_fair_df)
+
+    cleaned_data.to_csv(
+        f'{data_directory}\\{cleaned_data_file_name}',
+        index=False
+    )
+
+    return cleaned_data
 
 
-def clean_data(data, career_fair_df):
+def clean_data(
+    data: pd.DataFrame,
+    career_fair_df: pd.DataFrame
+) -> pd.DataFrame:
     print(f'{Fore.MAGENTA}\nCleaning data...{Style.RESET_ALL}')
 
     yes_no_columns = [

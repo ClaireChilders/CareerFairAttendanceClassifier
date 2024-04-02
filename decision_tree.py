@@ -1,12 +1,9 @@
-import os
 import time
 
-import pandas as pd
 from hyperparameters import implementation_1_hyperparameters
 from preprocessing import (
     get_practical_test,
     load_data,
-    clean_data,
 )
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import (
@@ -22,16 +19,7 @@ from colorama import Fore, Style
 #                           Load and preprocess data
 # =============================================================================
 
-cleaned_data_file_name = 'cleaned_data.csv'
-
-if 'data' not in os.listdir():
-    os.makedirs('data')
-
-if cleaned_data_file_name in os.listdir('data'):
-    cleaned_data = pd.read_csv(f'data\\{cleaned_data_file_name}')
-else:
-    cleaned_data = clean_data(*load_data())
-    cleaned_data.to_csv(f'data\\{cleaned_data_file_name}', index=False)
+cleaned_data = load_data()
 
 # features, target = extract_features_target(cleaned_data)
 # x_train, x_test, y_train, y_test = split_data(features, target, 0.2)
