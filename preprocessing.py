@@ -38,6 +38,8 @@ def load_data() -> pd.DataFrame:
     student_df = pd.read_csv('data/student_data.csv')
     stu_counts_1_df = pd.read_csv('data/student_counts_1.csv')
     stu_counts_2_df = pd.read_csv('data/student_counts_2.csv')
+    stu_fair_attendance_df = pd.read_csv('data/student_fair_attendance.csv')
+    stu_event_attendance_df = pd.read_csv('data/student_event_attendance.csv')
 
     print(f'{Fore.GREEN}  ✓{Fore.LIGHTCYAN_EX} csv files loaded'
           f'{Style.RESET_ALL}')
@@ -162,7 +164,7 @@ def load_data() -> pd.DataFrame:
     merged_data.drop(
         [
             'appointment_count',
-            'stu_id',
+            # 'stu_id',
             'career_fair_id',
         ], axis=1, inplace=True)
 
@@ -172,19 +174,28 @@ def load_data() -> pd.DataFrame:
 
     print(f'{Fore.GREEN}✓{Fore.MAGENTA} Data merged{Style.RESET_ALL}')
 
-    cleaned_data = clean_data(merged_data, career_fair_df)
+    cleaned_data = clean_data(merged_data, career_fair_df,
+                              stu_fair_attendance_df, stu_event_attendance_df)
+
+    print(f'{Fore.MAGENTA}\nSaving cleaned data...{Style.RESET_ALL}')
 
     cleaned_data.to_csv(
         f'{data_directory}\\{cleaned_data_file_name}',
         index=False
     )
 
+    print(f'{Fore.GREEN}✓{Fore.MAGENTA} Cleaned data saved to '
+          f'{Fore.LIGHTBLACK_EX}{data_directory}\\{cleaned_data_file_name}'
+          f'{Style.RESET_ALL}')
+
     return cleaned_data
 
 
 def clean_data(
     data: pd.DataFrame,
-    career_fair_df: pd.DataFrame
+    career_fair_df: pd.DataFrame,
+    stu_fair_attendance_df: pd.DataFrame,
+    stu_event_attendance_df: pd.DataFrame
 ) -> pd.DataFrame:
     """
     Cleans the data by filling null values, converting Yes/No values to 1/0,
@@ -264,8 +275,8 @@ def clean_data(
     # Convert any strings in the form '1,000' to integers
     #   while keeping existing integers
 
-    print(f'{Fore.LIGHTBLACK_EX}  → {Fore.BLUE}Converting strings to binary '
-          f'values...{Style.RESET_ALL}')
+    print(f'{Fore.LIGHTBLACK_EX}  → {Fore.BLUE}Converting numerical strings '
+          f'to binary values...{Style.RESET_ALL}')
 
     for column in count_columns:
         data[column] = data[column].apply(
@@ -277,42 +288,50 @@ def clean_data(
     # Convert integers to binary thresholds values
     #   and drop the original columns
 
-    data['has_appointment'] = data['stu_appointments'].apply(
-        lambda x: 1 if x > 0 else 0)
-    data['has_5_appointments'] = data['stu_appointments'].apply(
-        lambda x: 1 if x >= 5 else 0)
-    data['has_10_appointments'] = data['stu_appointments'].apply(
+    data['has_0_appointments'] = data['stu_appointments'].apply(
+        lambda x: 1 if x == 0 else 0)
+    data['has_1-5_appointments'] = data['stu_appointments'].apply(
+        lambda x: 1 if x >= 1 and x < 5 else 0)
+    data['has_5-10_appointments'] = data['stu_appointments'].apply(
+        lambda x: 1 if x >= 5 and x < 10 else 0)
+    data['has_10+_appointments'] = data['stu_appointments'].apply(
         lambda x: 1 if x >= 10 else 0)
-    data['has_application'] = data['stu_applications'].apply(
-        lambda x: 1 if x > 0 else 0)
-    data['has_5_applications'] = data['stu_applications'].apply(
-        lambda x: 1 if x >= 5 else 0)
-    data['has_10_applications'] = data['stu_applications'].apply(
+    data['has_0_applications'] = data['stu_applications'].apply(
+        lambda x: 1 if x == 0 else 0)
+    data['has_1-5_applications'] = data['stu_applications'].apply(
+        lambda x: 1 if x >= 1 and x < 5 else 0)
+    data['has_5-10_applications'] = data['stu_applications'].apply(
+        lambda x: 1 if x >= 5 and x < 10 else 0)
+    data['has_10+_applications'] = data['stu_applications'].apply(
         lambda x: 1 if x >= 10 else 0)
-    data['has_login'] = data['stu_logins'].apply(
-        lambda x: 1 if x > 0 else 0)
-    data['has_10_logins'] = data['stu_logins'].apply(
-        lambda x: 1 if x >= 10 else 0)
-    data['has_100_logins'] = data['stu_logins'].apply(
+    data['has_0_logins'] = data['stu_logins'].apply(
+        lambda x: 1 if x == 0 else 0)
+    data['has_1-10_logins'] = data['stu_logins'].apply(
+        lambda x: 1 if x >= 1 and x < 10 else 0)
+    data['has_10-100_logins'] = data['stu_logins'].apply(
+        lambda x: 1 if x >= 10 and x < 100 else 0)
+    data['has_100+_logins'] = data['stu_logins'].apply(
         lambda x: 1 if x >= 100 else 0)
-    data['has_attendance'] = data['stu_attendances'].apply(
-        lambda x: 1 if x > 0 else 0)
-    data['has_5_attendances'] = data['stu_attendances'].apply(
-        lambda x: 1 if x >= 5 else 0)
-    data['has_10_attendances'] = data['stu_attendances'].apply(
-        lambda x: 1 if x >= 10 else 0)
-    data['has_work_experience'] = data['stu_work_experiences'].apply(
-        lambda x: 1 if x > 0 else 0)
+    data['has_0_attendances'] = data['stu_attendances'].apply(
+        lambda x: 1 if x == 0 else 0)
+    data['has_1-2_attendance'] = data['stu_attendances'].apply(
+        lambda x: 1 if x >= 1 and x <= 2 else 0)
+    data['has_3-5_attendances'] = data['stu_attendances'].apply(
+        lambda x: 1 if x <= 5 and x >= 3 else 0)
+    data['has_5-10_attendances'] = data['stu_attendances'].apply(
+        lambda x: 1 if x <= 10 and x > 5 else 0)
+    data['has_10+_attendances'] = data['stu_attendances'].apply(
+        lambda x: 1 if x > 10 else 0)
+    data['has_0_work_experiences'] = data['stu_work_experiences'].apply(
+        lambda x: 1 if x == 0 else 0)
+    data['has_1_work_experience'] = data['stu_work_experiences'].apply(
+        lambda x: 1 if x == 1 else 0)
     data['has_2_work_experiences'] = data['stu_work_experiences'].apply(
-        lambda x: 1 if x >= 2 else 0)
-    data['has_3_work_experiences'] = data['stu_work_experiences'].apply(
+        lambda x: 1 if x == 2 else 0)
+    data['has_3+_work_experiences'] = data['stu_work_experiences'].apply(
         lambda x: 1 if x >= 3 else 0)
-    data['has_experience'] = data['stu_experiences'].apply(
+    data['has_learning_experience'] = data['stu_experiences'].apply(
         lambda x: 1 if x > 0 else 0)
-    data['has_2_experiences'] = data['stu_experiences'].apply(
-        lambda x: 1 if x >= 2 else 0)
-    data['has_3_experiences'] = data['stu_experiences'].apply(
-        lambda x: 1 if x >= 3 else 0)
 
     data.drop(count_columns, axis=1, inplace=True)
 
@@ -320,6 +339,375 @@ def clean_data(
           f'values{Style.RESET_ALL}')
     print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} All strings converted to '
           f'binary values{Style.RESET_ALL}')
+
+    # ===============================================================
+    #                     Fair Attendance Cleaning
+    # ===============================================================
+    print(f'{Fore.LIGHTBLACK_EX}  → {Fore.BLUE}Extracting fair attendance '
+          f'values...{Style.RESET_ALL}')
+
+    # stu_fair_attendance_df contains a row for each career fair for each
+    #   student that attended that career fair. We want to count the number
+    #   of fairs before the fair date for each student and merge that with
+    #   the student data.
+    #
+    # For every row in the data, we want to lookup and count the number of
+    #   fairs that the student attended before the career fair date for
+    #   that row.
+    #
+    # Process:
+    #   1. Get the cross product of the fair attendances and career fair dates
+    #       to get a row for each attendance for each career fair.
+    #   2. Filter out the attendances that are after the career fair date
+    #       to get the attendances that are before the career fair date.
+    #   3. Separate into main career fair and other career fair attendances.
+    #      (main career fairs are the ones we are predicting)
+    #   4. Group by student id and career fair date and count the number of
+    #       attendances before the career fair date.
+    #   5. Merge the counts with the data and fill null values with 0.
+    #   6. Convert the counts to binary values.
+
+    # Step 0. - Data initialization
+    stu_fair_attendance_df['career_fair_date'] = pd.to_datetime(
+        stu_fair_attendance_df['career_fair_date'])
+
+    simple_cf_df = career_fair_df[['career_fair_name', 'career_fair_date']]
+    main_fair_names = simple_cf_df['career_fair_name'].unique()
+    simple_cf_df.loc[:, 'career_fair_date'] = pd.to_datetime(
+        simple_cf_df['career_fair_date'])
+
+    stu_fair_attendance_df.rename(
+        columns={
+            'career_fair_name': 'attended_career_fair_name',
+            'career_fair_date': 'attended_career_fair_date'
+        },
+        inplace=True
+    )
+
+    # Step 1.
+    cross_attendances = pd.merge(
+        stu_fair_attendance_df, simple_cf_df,
+        how='cross')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Cross product of fair '
+          f'attendance and career fair dates created{Style.RESET_ALL}')
+
+    # Step 2.
+    previous_attendances = cross_attendances[
+        cross_attendances['career_fair_date'] >
+        cross_attendances['attended_career_fair_date']
+    ]
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Attendances before career '
+          f'fair date extracted{Style.RESET_ALL}')
+
+    # Step 3.
+    previous_main_attendances = previous_attendances[
+        previous_attendances['attended_career_fair_name'].isin(main_fair_names)
+    ]
+    previous_other_attendances = previous_attendances[
+        ~previous_attendances['attended_career_fair_name'].isin(
+            main_fair_names)
+    ]
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Main and other fair '
+          f'attendances separated{Style.RESET_ALL}')
+
+    # Step 4.
+    previous_main_attendances = previous_main_attendances.groupby(
+        ['stu_id', 'career_fair_date']
+    ).agg(
+        {'attended_career_fair_date': 'count'}
+    ).reset_index()
+    previous_other_attendances = previous_other_attendances.groupby(
+        ['stu_id', 'career_fair_date']
+    ).agg(
+        {'attended_career_fair_date': 'count'}
+    ).reset_index()
+
+    previous_main_attendances.rename(
+        columns={
+            'attended_career_fair_date': 'attended_main_fair_before',
+        },
+        inplace=True
+    )
+    previous_other_attendances.rename(
+        columns={
+            'attended_career_fair_date': 'attended_other_fair_before',
+        },
+        inplace=True
+    )
+
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Fair attendance grouped by '
+          f'student id and career fair date{Style.RESET_ALL}')
+
+    # Step 5.
+    # First we have to ensure career_fair_date is in the same format
+    data['career_fair_date'] = pd.to_datetime(data['career_fair_date'])
+    # Then we can merge the counts with the data
+    data = pd.merge(
+        data, previous_main_attendances,
+        on=['stu_id', 'career_fair_date'],
+        how='left')
+    data = pd.merge(
+        data, previous_other_attendances,
+        on=['stu_id', 'career_fair_date'],
+        how='left')
+
+    data['attended_other_fair_before'] = (
+        data['attended_other_fair_before'].fillna(0))
+    data['attended_main_fair_before'] = (
+        data['attended_main_fair_before'].fillna(0))
+
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Fair attendance merged with '
+          f'data{Style.RESET_ALL}')
+
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Fair attendance extracted'
+          f'{Style.RESET_ALL}')
+
+    # Step 6.
+    data['attended_0_main_fairs_before'] = (
+        data['attended_main_fair_before'].apply(
+            lambda x: 1 if x == 0 else 0))
+    data['attended_1_main_fair_before'] = (
+        data['attended_main_fair_before'].apply(
+            lambda x: 1 if x == 1 else 0))
+    data['attended_2_main_fairs_before'] = (
+        data['attended_main_fair_before'].apply(
+            lambda x: 1 if x == 2 else 0))
+    data['attended_3+_main_fairs_before'] = (
+        data['attended_main_fair_before'].apply(
+            lambda x: 1 if x >= 3 else 0))
+
+    data['attended_0_other_fairs_before'] = (
+        data['attended_other_fair_before'].apply(
+            lambda x: 1 if x == 0 else 0))
+    data['attended_1_other_fairs_before'] = (
+        data['attended_other_fair_before'].apply(
+            lambda x: 1 if x == 1 and x <= 2 else 0))
+    data['attended_2_other_fairs_before'] = (
+        data['attended_other_fair_before'].apply(
+            lambda x: 1 if x == 2 else 0))
+    data['attended_3+_other_fairs_before'] = (
+        data['attended_other_fair_before'].apply(
+            lambda x: 1 if x >= 3 else 0))
+
+    data.drop(['attended_main_fair_before', 'attended_other_fair_before'],
+              axis=1, inplace=True)
+
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Fair attendance converted to '
+          f'binary values{Style.RESET_ALL}')
+
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Fair attendance extracted'
+          f'{Style.RESET_ALL}')
+
+    # ===============================================================
+    #                     Event Attendance Cleaning
+    # ===============================================================
+    print(f'{Fore.LIGHTBLACK_EX}  → {Fore.BLUE}Extracting event attendance '
+          f'values...{Style.RESET_ALL}')
+
+    # stu_event_attendance_df contains a row for each event for each
+    #   student that attended that event. We want to count the number
+    #   of events before the career fair date for each student and merge
+    #   that with the student data.
+    #
+    # Unlike the career fair attendance where we counted past attendance,
+    #   we also want to consider the category of the event. Each event may
+    #   have multiple categories.
+    #
+    # Possible Event Categories:
+    #   - Academic
+    #   - Career fairs
+    #   - Conference
+    #   - Employers
+    #   - General
+    #   - Guidance
+    #   - Hiring
+    #   - Networking
+    #
+    # We also want to consider specifically career fair prep sessions
+    #   because they are likely to be more relevant to the career fair.
+    #
+    # Process:
+    #   1. Get the cross product of the event attendances and career fair dates
+    #   2. Filter out the attendances that are after the career fair date
+    #   3. Separate categories into different dataframes
+    #   4. Separate career fair prep sessions into a separate dataframe
+    #   5. For each dataframe, group by student id and career fair date and
+    #      count the number of attendances.
+    #   6. For the career fair prep session dataframe, add a boolean for
+    #      whether that attendance/event is for that upcoming career fair
+    #      (this can be determined as whether the event is within a month)
+    #   7. Merge the counts with the data and fill null values with 0.
+    #   8. Convert the counts to binary values.
+
+    print(f'{Fore.LIGHTBLACK_EX}    → {Fore.BLUE}Loading event attendance '
+          f'data...{Style.RESET_ALL}')
+
+    stu_event_attendance_df['event_date'] = pd.to_datetime(
+        stu_event_attendance_df['event_date'])
+
+    # Convert string list to list type
+    stu_event_attendance_df['event_categories'] = (
+        stu_event_attendance_df['event_categories'].apply(
+            lambda x: (
+                x.lower().strip().split(',') if isinstance(x, str) else []
+            )
+        )
+    )
+
+    all_event_categories = (
+        stu_event_attendance_df['event_categories'].explode().unique())
+    event_categories = set(
+        str(category).strip().lower().replace(' ', '_')
+        for category in all_event_categories
+    )
+    print(f'{Fore.GREEN}      ✓{Fore.LIGHTCYAN_EX} Event categories loaded')
+    print(f'{Fore.LIGHTBLACK_EX}      ⓘ {Fore.BLUE} Event Categories: '
+          f'{Fore.LIGHTBLACK_EX}{event_categories}{Style.RESET_ALL}')
+
+    print(f'{Fore.GREEN}      ✓{Fore.LIGHTCYAN_EX} Event attendance data '
+          f'loaded{Style.RESET_ALL}')
+
+    # Step 1.
+    cross_event_attendances = pd.merge(
+        stu_event_attendance_df, simple_cf_df,
+        how='cross')
+    print(f'{Fore.GREEN}      ✓{Fore.LIGHTCYAN_EX} Cross product of event '
+          f'attendance and career fair dates created{Style.RESET_ALL}')
+
+    # Step 2.
+    previous_event_attendances = cross_event_attendances[
+        cross_event_attendances['career_fair_date'] >
+        cross_event_attendances['event_date']
+    ]
+    print(f'{Fore.GREEN}      ✓{Fore.LIGHTCYAN_EX} Attendances before career '
+          f'fair date extracted{Style.RESET_ALL}')
+
+    # Step 3.
+    print(f'{Fore.LIGHTBLACK_EX}    → {Fore.BLUE}Separating event attendance '
+          f'by category...{Style.RESET_ALL}')
+    category_dfs = {}
+    for category in event_categories:
+        category_df = previous_event_attendances[
+            previous_event_attendances['event_categories'].apply(
+                lambda x: category in x)
+        ]
+        category_dfs[category] = category_df
+        print(f'{Fore.GREEN}      ✓ {Fore.LIGHTMAGENTA_EX}{category}'
+              f'{Fore.LIGHTCYAN_EX} event attendance separated'
+              f'{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}      ✓{Fore.LIGHTCYAN_EX} Event attendance separated '
+          f'by category{Style.RESET_ALL}')
+
+    # Step 4.
+    print(f'{Fore.LIGHTBLACK_EX}    → {Fore.BLUE}Separating career fair prep '
+          f'sessions...{Style.RESET_ALL}')
+
+    career_fair_prep_df = previous_event_attendances[
+        previous_event_attendances['event_name'].apply(
+            lambda x: 'career fair' in str(x).lower())
+    ]
+
+    category_dfs['cf_prep'] = career_fair_prep_df.copy(deep=True)
+    event_categories.add('cf_prep')
+    # Step 5.
+    print(f'{Fore.LIGHTBLACK_EX}    → {Fore.BLUE}Grouping event attendance by '
+          f'student id and career fair date...{Style.RESET_ALL}')
+    for category, category_df in category_dfs.items():
+        category_df = category_df.groupby(
+            ['stu_id', 'career_fair_date']
+        ).agg(
+            {'event_date': 'count'}
+        ).reset_index()
+        category_df.rename(
+            columns={'event_date': f'attended_{category}_before'},
+            inplace=True
+        )
+        category_dfs[category] = category_df
+        print(f'{Fore.GREEN}      ✓ {Fore.LIGHTMAGENTA_EX}{category}'
+              f'{Fore.LIGHTCYAN_EX} event attendance grouped by student id'
+              f'and career fair date{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}      ✓{Fore.LIGHTCYAN_EX} Event attendance grouped '
+          f'by student id and career fair date{Style.RESET_ALL}')
+
+    # Step 6.
+    print(f'{Fore.LIGHTBLACK_EX}    → {Fore.BLUE}Adding boolean for career '
+          f'fair prep sessions...{Style.RESET_ALL}')
+
+    print(career_fair_prep_df['career_fair_date'])
+    print(career_fair_prep_df['event_date'])
+
+    # TODO: Figure out why there are none included in this (all values are 0)
+
+    attended_prep_event = career_fair_prep_df[
+        (pd.to_datetime(career_fair_prep_df['career_fair_date']) -
+         pd.to_datetime(career_fair_prep_df['event_date'])).dt.days <= 60
+    ]
+    print(f'{Fore.GREEN}      ✓{Fore.LIGHTCYAN_EX} Selected relevant career '
+          f'fair prep sessions (within 60 days of career fair date)'
+          f'{Style.RESET_ALL}')
+
+    data['attended_career_fair_prep'] = data.loc[
+        :, ['stu_id', 'career_fair_date']
+    ].isin(
+        attended_prep_event.loc[:, ['stu_id', 'career_fair_date']]
+    ).any(axis=1)
+    print(data['attended_career_fair_prep'])
+
+    data['attended_career_fair_prep'] = (
+        data['attended_career_fair_prep'].apply(
+            lambda x: 1 if x else 0))
+    print(data['attended_career_fair_prep'])
+
+    print(f'{Fore.GREEN}      ✓{Fore.LIGHTCYAN_EX} Career fair prep sessions '
+          f'boolean added{Style.RESET_ALL}')
+
+    # Step 7.
+    print(f'{Fore.LIGHTBLACK_EX}    → {Fore.BLUE}Merging event attendance '
+          f'with data...{Style.RESET_ALL}')
+    for category, category_df in category_dfs.items():
+        data = pd.merge(
+            data, category_df,
+            on=['stu_id', 'career_fair_date'],
+            how='left')
+        data[f'attended_{category}_before'] = (
+            data[f'attended_{category}_before'].fillna(0))
+        print(f'{Fore.GREEN}      ✓ {Fore.LIGHTMAGENTA_EX}{category}'
+              f'{Fore.LIGHTCYAN_EX} event attendance merged with data'
+              f'{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}      ✓{Fore.LIGHTCYAN_EX} Event attendance merged '
+          f'with data{Style.RESET_ALL}')
+
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Event attendance extracted'
+          f'{Style.RESET_ALL}')
+
+    # Step 8.
+    print(f'{Fore.LIGHTBLACK_EX}    → {Fore.BLUE}Converting event attendance '
+          f'to binary values...{Style.RESET_ALL}')
+    for category in event_categories:
+        data[f'attended_0_past_{category}_events'] = (
+            data[f'attended_{category}_before'].apply(
+                lambda x: 1 if x == 0 else 0))
+        data[f'attended_1_past_{category}_events'] = (
+            data[f'attended_{category}_before'].apply(
+                lambda x: 1 if x == 1 else 0))
+        data[f'attended_2_past_{category}_events'] = (
+            data[f'attended_{category}_before'].apply(
+                lambda x: 1 if x == 2 else 0))
+        data[f'attended_3+_past_{category}_events'] = (
+            data[f'attended_{category}_before'].apply(
+                lambda x: 1 if x >= 3 else 0))
+
+        data.drop([f'attended_{category}_before'],
+                  axis=1, inplace=True)
+        print(f'{Fore.GREEN}      ✓ {Fore.LIGHTMAGENTA_EX}{category}'
+              f'{Fore.LIGHTCYAN_EX} event attendance converted to binary '
+              f'values{Style.RESET_ALL}')
+
+    print(f'{Fore.GREEN}      ✓{Fore.LIGHTCYAN_EX} Event attendance converted '
+          f'to binary values{Style.RESET_ALL}')
+
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Event attendance '
+          f'extracted{Style.RESET_ALL}')
 
     # ===============================================================
     #                      Date Conversion
@@ -335,11 +723,11 @@ def clean_data(
     data['created_1_year_pre_cf'] = data['days_since_created'].apply(
         lambda x: 1 if x <= 365 else 0)
     data['created_2_years_pre_cf'] = data['days_since_created'].apply(
-        lambda x: 1 if x <= 730 else 0)
+        lambda x: 1 if x <= 730 and x > 365 else 0)
     data['created_3_years_pre_cf'] = data['days_since_created'].apply(
-        lambda x: 1 if x <= 1095 else 0)
+        lambda x: 1 if x <= 1095 and x > 730 else 0)
     data['created_4_years_pre_cf'] = data['days_since_created'].apply(
-        lambda x: 1 if x <= 1825 else 0)
+        lambda x: 1 if x <= 1825 and x > 1095 else 0)
     data['created_5_years_pre_cf'] = data['days_since_created'].apply(
         lambda x: 1 if x > 1825 else 0)
 
@@ -356,9 +744,9 @@ def clean_data(
     data['login_7_days_pre_cf'] = data['days_since_login'].apply(
         lambda x: 1 if x <= 7 else 0)
     data['login_30_days_pre_cf'] = data['days_since_login'].apply(
-        lambda x: 1 if x <= 30 else 0)
+        lambda x: 1 if x <= 30 and x > 7 else 0)
     data['login_90_days_pre_cf'] = data['days_since_login'].apply(
-        lambda x: 1 if x <= 90 else 0)
+        lambda x: 1 if x <= 90 and x > 30 else 0)
     data['login_90+_days_pre_cf'] = data['days_since_login'].apply(
         lambda x: 1 if x > 90 else 0)
 
@@ -368,17 +756,27 @@ def clean_data(
           f'binary values{Style.RESET_ALL}')
 
     # Date between stu_grad_date and career_fair_date
-    data['days_until_grad'] = (pd.to_datetime(data['stu_grad_date']) -
-                               pd.to_datetime(data['career_fair_date'])
-                               ).dt.days
+    data['days_until_grad'] = (
+        pd.to_datetime(data['stu_grad_date']) -
+        pd.to_datetime(data['career_fair_date'])
+    ).dt.days
+
+    data['grad_4+_years_pre_cf'] = data['days_until_grad'].apply(
+        lambda x: 1 if x <= -1095 else 0)
+    data['grad_3_years_pre_cf'] = data['days_until_grad'].apply(
+        lambda x: 1 if x <= -730 and x > -1095 else 0)
+    data['grad_2_years_pre_cf'] = data['days_until_grad'].apply(
+        lambda x: 1 if x <= -365 and x > -730 else 0)
+    data['grad_1_year_pre_cf'] = data['days_until_grad'].apply(
+        lambda x: 1 if x <= 0 and x > -365 else 0)
 
     data['grad_1_year_post_cf'] = data['days_until_grad'].apply(
-        lambda x: 1 if x <= 365 else 0)
+        lambda x: 1 if x <= 365 and x > 0 else 0)
     data['grad_2_years_post_cf'] = data['days_until_grad'].apply(
-        lambda x: 1 if x <= 730 else 0)
+        lambda x: 1 if x <= 730 and x > 365 else 0)
     data['grad_3_years_post_cf'] = data['days_until_grad'].apply(
-        lambda x: 1 if x <= 1095 else 0)
-    data['grad_4_years_post_cf'] = data['days_until_grad'].apply(
+        lambda x: 1 if x <= 1095 and x > 730 else 0)
+    data['grad_4+_years_post_cf'] = data['days_until_grad'].apply(
         lambda x: 1 if x > 1095 else 0)
 
     data.drop(['days_until_grad'], axis=1, inplace=True)
@@ -410,32 +808,32 @@ def clean_data(
 
     data['is_freshman'] = data['stu_school_year'].apply(
         lambda x: 1 if 'Freshman' in x else 0)
-    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted Freshmen '
-          f'{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted '
+          f'{Fore.LIGHTMAGENTA_EX}Freshmen {Style.RESET_ALL}')
     data['is_sophomore'] = data['stu_school_year'].apply(
         lambda x: 1 if 'Sophomore' in x else 0)
-    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted Sophomores '
-          f'{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted '
+          f'{Fore.LIGHTMAGENTA_EX}Sophomores {Style.RESET_ALL}')
     data['is_junior'] = data['stu_school_year'].apply(
         lambda x: 1 if 'Junior' in x else 0)
-    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted Juniors '
-          f'{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted '
+          f'{Fore.LIGHTMAGENTA_EX}Juniors {Style.RESET_ALL}')
     data['is_senior'] = data['stu_school_year'].apply(
         lambda x: 1 if 'Senior' in x else 0)
-    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted Seniors '
-          f'{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted '
+          f'{Fore.LIGHTMAGENTA_EX}Seniors {Style.RESET_ALL}')
     data['is_alumni'] = data['stu_school_year'].apply(
         lambda x: 1 if 'Alumni' in x else 0)
-    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted Alumni '
-          f'{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted '
+          f'{Fore.LIGHTMAGENTA_EX}Alumni {Style.RESET_ALL}')
     data['is_masters'] = data['stu_school_year'].apply(
         lambda x: 1 if 'Masters' in x else 0)
-    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted Masters Students '
-          f'{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted '
+          f'{Fore.LIGHTMAGENTA_EX}Masters Students {Style.RESET_ALL}')
     data['is_doctorate'] = data['stu_school_year'].apply(
         lambda x: 1 if 'Doctorate' in x else 0)
-    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted Doctoral Students '
-          f'{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted '
+          f'{Fore.LIGHTMAGENTA_EX}Doctoral Students {Style.RESET_ALL}')
 
     data.drop(['stu_school_year'], axis=1, inplace=True)
 
@@ -474,36 +872,44 @@ def clean_data(
 
     data['is_engineering'] = data['stu_colleges'].apply(
         lambda x: 1 if any([college in engineering for college in x]) else 0)
-    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted engineering '
-          f'binary values{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted '
+          f'{Fore.LIGHTMAGENTA_EX}engineering '
+          f'{Fore.LIGHTCYAN_EX}binary values{Style.RESET_ALL}')
     data['is_business'] = data['stu_colleges'].apply(
         lambda x: 1 if any([college in business for college in x]) else 0)
-    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted business '
-          f'binary values{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted '
+          f'{Fore.LIGHTMAGENTA_EX}business '
+          f'{Fore.LIGHTCYAN_EX}binary values{Style.RESET_ALL}')
     data['is_health'] = data['stu_colleges'].apply(
         lambda x: 1 if any([college in health for college in x]) else 0)
-    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted health '
-          f'binary values{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted '
+          f'{Fore.LIGHTMAGENTA_EX}health '
+          f'{Fore.LIGHTCYAN_EX}binary values{Style.RESET_ALL}')
     data['is_education'] = data['stu_colleges'].apply(
         lambda x: 1 if any([college in education for college in x]) else 0)
-    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted education '
-          f'binary values{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted '
+          f'{Fore.LIGHTMAGENTA_EX}education '
+          f'{Fore.LIGHTCYAN_EX}binary values{Style.RESET_ALL}')
     data['is_arts'] = data['stu_colleges'].apply(
         lambda x: 1 if any([college in arts for college in x]) else 0)
-    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted arts '
-          f'binary values{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted '
+          f'{Fore.LIGHTMAGENTA_EX}arts '
+          f'{Fore.LIGHTCYAN_EX}binary values{Style.RESET_ALL}')
     data['no_college'] = data['stu_colleges'].apply(
         lambda x: 1 if any([college in no_college for college in x]) else 0)
-    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted no college '
-          f'binary values{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted '
+          f'{Fore.LIGHTMAGENTA_EX}no college '
+          f'{Fore.LIGHTCYAN_EX}binary values{Style.RESET_ALL}')
     data['multiple_colleges'] = data['stu_colleges'].apply(
         lambda x: 1 if len(x) > 1 else 0)
-    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted multiple colleges '
-          f'binary values{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted '
+          f'{Fore.LIGHTMAGENTA_EX}multiple colleges '
+          f'{Fore.LIGHTCYAN_EX}binary values{Style.RESET_ALL}')
     data['other_college'] = data['stu_colleges'].apply(
         lambda x: 0 if any(college in all_colleges for college in x) else 1)
-    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted other colleges '
-          f'binary values{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Extracted '
+          f'{Fore.LIGHTMAGENTA_EX}other colleges '
+          f'{Fore.LIGHTCYAN_EX}binary values{Style.RESET_ALL}')
 
     data.drop(['stu_colleges'], axis=1, inplace=True)
 
@@ -565,7 +971,7 @@ def clean_data(
     )
 
     # Walk-Ins
-    data['has_walk_in'] = data['appointment_types'].apply(
+    data['has_walk_in_appointment'] = data['appointment_types'].apply(
         lambda x: 1 if any('walk-in' in i for i in x) else 0
     )
     data['appointment_types'] = data['appointment_types'].apply(
@@ -576,7 +982,7 @@ def clean_data(
           f'{Style.RESET_ALL}')
 
     # Resume Reviews
-    data['has_resume_review'] = data['appointment_types'].apply(
+    data['has_resume_review_appointment'] = data['appointment_types'].apply(
         lambda x: 1 if any('resume' in i for i in x) else 0
     )
     data['appointment_types'] = data['appointment_types'].apply(
@@ -587,7 +993,7 @@ def clean_data(
           f'{Style.RESET_ALL}')
 
     # Career Fair Prep
-    data['has_cf_prep'] = data['appointment_types'].apply(
+    data['has_cf_prep_appointment'] = data['appointment_types'].apply(
         lambda x: 1 if any('career fair' in i for i in x) else 0
     )
     data['appointment_types'] = data['appointment_types'].apply(
@@ -598,8 +1004,10 @@ def clean_data(
           f'{Style.RESET_ALL}')
 
     # Career Exploration
-    data['has_career_exploration'] = data['appointment_types'].apply(
-        lambda x: 1 if any('career exploration' in i for i in x) else 0
+    data['has_career_exploration_appointment'] = (
+        data['appointment_types'].apply(
+            lambda x: 1 if any('career exploration' in i for i in x) else 0
+        )
     )
     data['appointment_types'] = data['appointment_types'].apply(
         lambda x: [i for i in x if 'career exploration' not in i]
@@ -609,7 +1017,7 @@ def clean_data(
           f'{Style.RESET_ALL}')
 
     # Internship/Job Search
-    data['has_job_search'] = data['appointment_types'].apply(
+    data['has_job_search_appointment'] = data['appointment_types'].apply(
         lambda x: 1 if any('internship' in i or 'job' in i for i in x) else 0
     )
     data['appointment_types'] = data['appointment_types'].apply(
@@ -620,7 +1028,7 @@ def clean_data(
           f'extracted{Style.RESET_ALL}')
 
     # Other
-    data['has_other'] = data['appointment_types'].apply(
+    data['has_other_appointment'] = data['appointment_types'].apply(
         lambda x: 1 if len(x) > 0 else 0
     )
 
@@ -633,7 +1041,49 @@ def clean_data(
     print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Appointments cleaned'
           f'{Style.RESET_ALL}')
 
+    # ===============================================================
+    #                          GPA Cleaning
+    # ===============================================================
+
+    print(f'{Fore.LIGHTBLACK_EX}  → {Fore.BLUE}Cleaning GPA '
+          f'values...{Style.RESET_ALL}')
+
+    data['stu_gpa'] = data['stu_gpa'].apply(
+        lambda x: float(x) if isinstance(x, str) else x
+    )
+
+    data['no_gpa'] = data['stu_gpa'].apply(
+        lambda x: 1 if pd.isna(x) else 0
+    )
+    data['gpa_1.0'] = data['stu_gpa'].apply(
+        lambda x: 1 if x < 1.0 else 0
+    )
+    data['gpa_1.0-1.5'] = data['stu_gpa'].apply(
+        lambda x: 1 if x >= 1.0 and x < 1.5 else 0
+    )
+    data['gpa_1.5-2.0'] = data['stu_gpa'].apply(
+        lambda x: 1 if x >= 1.5 and x < 2.0 else 0
+    )
+    data['gpa_2.0-2.5'] = data['stu_gpa'].apply(
+        lambda x: 1 if x >= 2.0 and x < 2.5 else 0
+    )
+    data['gpa_2.5-3.0'] = data['stu_gpa'].apply(
+        lambda x: 1 if x >= 2.5 and x < 3.0 else 0
+    )
+    data['gpa_3.0-3.5'] = data['stu_gpa'].apply(
+        lambda x: 1 if x >= 3.0 and x < 3.5 else 0
+    )
+    data['gpa_3.5-4.0'] = data['stu_gpa'].apply(
+        lambda x: 1 if x >= 3.5 else 0
+    )
+
+    data.drop(['stu_gpa'], axis=1, inplace=True)
+
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} GPA cleaned{Style.RESET_ALL}')
+
     print(f'{Fore.GREEN}✓{Fore.MAGENTA} Data cleaned{Style.RESET_ALL}')
+
+    data.drop(['stu_id'], axis=1, inplace=True)
 
     print(f'{Fore.LIGHTBLACK_EX}  ⓘ {Fore.BLUE} Data: '
           f'{Fore.LIGHTBLACK_EX}{len(data)}{Style.RESET_ALL}')
@@ -679,7 +1129,7 @@ def split_data(features, target, test_size):
     Parameters:
     features (array-like): The input features.
     target (array-like): The target variable.
-    test_size (float): The proportion of the dataset to include in the test 
+    test_size (float): The proportion of the dataset to include in the test
       split.
 
     Returns:
@@ -699,7 +1149,10 @@ def split_data(features, target, test_size):
     return x_train, x_test, y_train, y_test
 
 
-def align_features(train_data: pd.DataFrame, test_data: pd.DataFrame):
+def align_features(
+    train_data: pd.DataFrame,
+    test_data: pd.DataFrame
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Aligns the features between the train and test dataframes.
 
@@ -708,7 +1161,7 @@ def align_features(train_data: pd.DataFrame, test_data: pd.DataFrame):
         test_data (pd.DataFrame): The testing data.
 
     Returns:
-        pd.DataFrame, pd.DataFrame: The aligned training and testing 
+        pd.DataFrame, pd.DataFrame: The aligned training and testing
           dataframes.
     """
     all_features = set(train_data.columns) | set(test_data.columns)
@@ -739,12 +1192,12 @@ def align_features(train_data: pd.DataFrame, test_data: pd.DataFrame):
 
 def split_practical_data(data: pd.DataFrame, test_career_fair_name: str):
     """
-    Split the given data into training and testing data based on the specified 
+    Split the given data into training and testing data based on the specified
       test career fair name.
 
     Parameters:
         data (pd.DataFrame): The input data to be split.
-        test_career_fair_name (str): The name of the career fair to be used as 
+        test_career_fair_name (str): The name of the career fair to be used as
           the test data.
 
     Returns:
@@ -828,3 +1281,120 @@ def get_practical_test(
           f'{Fore.LIGHTBLACK_EX}{len(features.columns)}{Style.RESET_ALL}')
 
     return x_train, x_test, y_train, y_test, x_practical_test, y_practical_test
+
+
+def train_test_validate(
+    data: pd.DataFrame,
+    test_size: float,
+    validation_size: float
+):
+    """
+    Split the given data into training and testing data.
+
+    Parameters:
+        data (pd.DataFrame): The input data to be split.
+        test_size (float): The proportion of the dataset to include in the test
+          split.
+        validation_size (float): The proportion of the dataset to include in
+            the validation split.
+
+    Returns:
+        x_train (pd.DataFrame): The training features.
+        x_test (pd.DataFrame): The testing features.
+        x_val (pd.DataFrame): The validation features.
+        y_train (pd.Series): The training target variable.
+        y_test (pd.Series): The testing target variable.
+        y_val (pd.Series): The validation target variable.
+    """
+    print(f'{Fore.MAGENTA}\n  Splitting data...{Style.RESET_ALL}')
+    print(f'{Fore.LIGHTBLACK_EX}    ⓘ {Fore.BLUE} Test size: '
+          f'{Fore.CYAN}{test_size}{Style.RESET_ALL}')
+    print(f'{Fore.LIGHTBLACK_EX}    ⓘ {Fore.BLUE} Validation size: '
+          f'{Fore.CYAN}{validation_size}{Style.RESET_ALL}')
+
+    features, target = extract_features_target(data)
+
+    print(f'{Fore.LIGHTBLACK_EX}    → {Fore.BLUE}Splitting train, test, '
+          f'validation data sets...{Style.RESET_ALL}')
+
+    x_train, x_test, y_train, y_test = train_test_split(
+        features, target, test_size=test_size, random_state=0)
+
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Test data split'
+          f'{Style.RESET_ALL}')
+
+    # Example:
+    #   test_size = 0.2, validation_size = 0.1
+    #
+    #   The train size will be 0.7 in this case
+    #
+    #   First, we split train and test from the data with test_size. Now the
+    #   training data is 0.8 the original data. Then we split the training
+    #   data by 0.125 (0.1 / 0.8) to get the validation data. Tihs gives us
+    #   validation data being 0.1 th size of the original data, the
+    #   training data being 0.7 the original data, and the testing data being
+    #   0.2 the original data.
+
+    print(f'{Fore.LIGHTBLACK_EX}    → {Fore.BLUE}Splitting validation data...'
+          f'{Style.RESET_ALL}')
+
+    x_train, x_val, y_train, y_val = train_test_split(
+        x_train, y_train,
+        test_size=validation_size/(1-test_size),
+        random_state=0)
+
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Training data split'
+          f'{Style.RESET_ALL}')
+    print(f'{Fore.GREEN}    ✓{Fore.LIGHTCYAN_EX} Validation data split'
+          f'{Style.RESET_ALL}')
+
+    print(f'{Fore.GREEN}  ✓{Fore.LIGHTCYAN_EX} Data split{Style.RESET_ALL}')
+
+    return x_train, x_test, x_val, y_train, y_test, y_val
+
+
+def print_metrics(
+    mse=None,
+    accuracy=None,
+    f1=None,
+    recall=None,
+    precision=None
+):
+    if mse is not None:
+        if mse > 0.25:
+            print(f'{Fore.RED}    Mean Squared Error: '
+                  f'{Fore.CYAN}{mse:.4f}' + Style.RESET_ALL)
+        else:
+            print(f'{Fore.GREEN}    Mean Squared Error: '
+                  f'{Fore.CYAN}{mse:.4f}' + Style.RESET_ALL)
+
+    if accuracy is not None:
+        if accuracy < 0.75:
+            print(f'{Fore.RED}    Accuracy: '
+                  f'{Fore.CYAN}{accuracy:.4f}' + Style.RESET_ALL)
+        else:
+            print(f'{Fore.GREEN}    Accuracy: '
+                  f'{Fore.CYAN}{accuracy:.4f}' + Style.RESET_ALL)
+
+    if f1 is not None:
+        if f1 < 0.5:
+            print(f'{Fore.RED}    F1 Score: '
+                  f'{Fore.CYAN}{f1:.4f}' + Style.RESET_ALL)
+        else:
+            print(f'{Fore.GREEN}    F1 Score: '
+                  f'{Fore.CYAN}{f1:.4f}' + Style.RESET_ALL)
+
+    if recall is not None:
+        if recall < 0.6:
+            print(f'{Fore.RED}    Recall: '
+                  f'{Fore.CYAN}{recall:.4f}' + Style.RESET_ALL)
+        else:
+            print(f'{Fore.GREEN}    Recall: '
+                  f'{Fore.CYAN}{recall:.4f}' + Style.RESET_ALL)
+    if precision is not None:
+        if precision < 0.6:
+            print(f'{Fore.RED}    Precision: '
+                  f'{Fore.CYAN}{precision:.4f}' + Style.RESET_ALL)
+        else:
+            print(f'{Fore.GREEN}    Precision: '
+                  f'{Fore.CYAN}{precision:.4f}' + Style.RESET_ALL)
