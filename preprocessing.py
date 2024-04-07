@@ -633,30 +633,24 @@ def clean_data(
     print(f'{Fore.LIGHTBLACK_EX}    → {Fore.BLUE}Adding boolean for career '
           f'fair prep sessions...{Style.RESET_ALL}')
 
-    print(career_fair_prep_df['career_fair_date'])
-    print(career_fair_prep_df['event_date'])
+    prep_event_dates = (pd.to_datetime(career_fair_prep_df['career_fair_date']) -
+         pd.to_datetime(career_fair_prep_df['event_date'])).dt.days
+    
+    attended_prep_event = career_fair_prep_df[prep_event_dates <= 60]
 
-    # TODO: Figure out why there are none included in this (all values are 0)
+    # drop duplicates because we only want to count each prep session once per 
+    #   career fair/student
+    attended_prep_event = attended_prep_event.drop_duplicates(
+        subset=['stu_id', 'career_fair_date'])
 
-    attended_prep_event = career_fair_prep_df[
-        (pd.to_datetime(career_fair_prep_df['career_fair_date']) -
-         pd.to_datetime(career_fair_prep_df['event_date'])).dt.days <= 60
-    ]
     print(f'{Fore.GREEN}      ✓{Fore.LIGHTCYAN_EX} Selected relevant career '
           f'fair prep sessions (within 60 days of career fair date)'
           f'{Style.RESET_ALL}')
 
-    data['attended_career_fair_prep'] = data.loc[
-        :, ['stu_id', 'career_fair_date']
-    ].isin(
-        attended_prep_event.loc[:, ['stu_id', 'career_fair_date']]
-    ).any(axis=1)
-    print(data['attended_career_fair_prep'])
-
     data['attended_career_fair_prep'] = (
-        data['attended_career_fair_prep'].apply(
-            lambda x: 1 if x else 0))
-    print(data['attended_career_fair_prep'])
+        (data['stu_id'].isin(attended_prep_event['stu_id'])) &
+        (data['career_fair_date'].isin(attended_prep_event['career_fair_date']))
+    ).astype(int)
 
     print(f'{Fore.GREEN}      ✓{Fore.LIGHTCYAN_EX} Career fair prep sessions '
           f'boolean added{Style.RESET_ALL}')
