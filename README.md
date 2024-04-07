@@ -1,122 +1,396 @@
 # CareerFairAttendanceClassifier
 
-## Purpose / Goal
+This project includes a practical implementation of machine learning. Through collaboration with the Oakland University Career and Life Design Center to gather student engagement data, this model uses a vast set of student Handshake data to train a model to predict whether students will attend an upcoming career fair.
 
-This project is designed to predict whether or not a student will attend a career fair based on their student data. The goal is to use this information to help the Career and Life Design Center plan for predicted attendance numbers and better target students who are less likely to attend career fairs and encourage them to attend.
+The goal of this model is not only to predict attendance however. One of the main takeaways is to determine what factors are most important in determining whether a student will attend a career fair and to gather any insights we can to help determine how to increase future fair attendance.
 
-## Method
+## Idea
 
-To predict whether or not a student will attend a career fair, a machine learning model is trained on student data, which is then used to predict whether a student will attend a career fair given what is known about them.
+Create a machine learning model to predict whether students will attend an upcoming career fair or not
 
-## Data
+## Outcomes
 
-The data used for this project is gathered from 5 datasets:
+Determine what factors are most influential in determining whether a student will attend a career fair or not
 
-1. Basic Student Data
-   This dataset contains basic information about students including the total number of login sessions, the total number of applications submitted, and the total number of events attended.
-2. Student Appointment Data
-   This dataset contains the total number of appointments each student has completed and a list of all types of appointments for each student.
-3. Career Fair Attendance Data
-   This dataset contains every career fair each student has attended, including their graduation date, major, college, school year, and gpa at the time of the career fair.
-4. Career Fair Registration Data
-   This dataset contains whether or not each student registered for each career fair and whether or not they attended.
-5. Career Fair Data
-   This dataset contains each career fair including the industries and majors that jobs are available for.
+## Process
 
-### Data Cleaning
+1. Gather Relevant Data
+2. Process data to include relevant information
+3. Split data into train, test, and validation sets
+4. Experiment with different algorithms, models, and hyperparameters to find the model best fit for this task with the highest performance
+5. Assess the performance of the model with metrics like accuracy, precision, recall, and F1-score.
+6. Fine-tune the model based on observations
+7. Determine what features to add or remove to improve performance of model
+8. Report the most important features
 
-The data must be cleaned before it can be used for analysis. This includes handling any null values, removing any duplicate values, and merging the datasets together.
+## Relevant Data
 
-In order to merge the datasets together, certain data needs to be converted to a format that decisions can be made on. For example, the career fair majors data is in a list format while each student has one major. What matters is whether the student's major is included or not in the list of majors for each career fair. So, the career fair majors must be referenced in a way that can be compared to the student's major for the data to be useful.
+### Student Data
 
-### Converting Data to a Usable Format
+- `stu_is_archived` (saved to `student_data.csv`)
+- `stu_is_activated` (saved to `student_data.csv`)
+- `stu_is_visible` (saved to `student_data.csv`)
+- `stu_is_work_study` (saved to `student_data.csv`)
+- `stu_is_profile_complete` (saved to `student_data.csv`)
+- `stu_grad_date` (saved to `student_data.csv`)
+- `stu_creation_date` (saved to `student_data.csv`)
+- `stu_login_date` (saved to `student_data.csv`)
+- `stu_gpa` (saved to `student_data.csv`)
+- `stu_majors` (saved to `student_data.csv`)
+- `stu_colleges` (saved to `student_data.csv`)
+- `stu_school_year` (saved to `student_data.csv`)
+- `stu_applications` (saved to `student_counts_1.csv`)
+- `stu_logins` (saved to `student_counts_1.csv`)
+- `stu_appointments` (saved to `student_counts_1.csv`)
+- `stu_attendances` (saved to `student_counts_2.csv`)
+- `stu_work_experience` (saved to `student_counts_2.csv`)
+- `stu_experiences` (saved to `student_counts_2.csv`)
+- `appointment_types` (saved to `appointment_types.csv`)
 
-First, certain numerical data must be converted to ranges to allow a categorical decision to be made.
+### Student Event Attendance
 
-- Logins/Year: `<5`, `5-10`, `10-15`, `15-20`, `20+`
-- Applications/Year: `<5`, `5-10`, `10-15`, `15-20`, `20-30`, `30-50`, `50+`
-- Events/Year: `1`, `2`, `3`, `4`, `5+`
-- Walk-Ins/Year: `0`, `1`, `2`, `3`, `4+`
-- Appointments/Year: `0`, `1`, `2`, `3`, `4+`
-- Years Attended: `0`, `1`, `2`, `3`, `4+`
-- Weeks Since Last Login: `<1`, `1-2`, `2-4`, `4-8`, `8-16`, `16+`
-- Years Until Graduation: `0`, `1`, `2`, `3`, `4+`
-- GPA: `0-1.0`, `1.0-1.5`, `1.5-2.0`, `2.0-2.5`, `2.5-3.0`, `3.0-3.5`, `3.5-4.0`
+`student_event_attendance.csv`
 
-Then, certain categorical data must be converted to a format that can be used for analysis.
+- `event_name`
+- `event_type`
+- `event_date`
+- `event_categories`
 
-Majors: Each major is converted to a binary value indicating whether or not the career fair includes that major.
+### Student Fair Attendance
+
+`student_fair_attendance.csv`
+
+- `career_fair_date`
+- `career_fair_name`
+
+### Career Fair Data
+
+`career_fair_data.csv`
+
+- `career_fair_name`
+- `career_fair_date`
+- `career_fair_majors`
+
+### Registration Data
+
+`registration_data.csv`
+
+- `is_pre_registered`
+- `is_checked_in`
+- `career_fair_name`
+- `career_fair_date`
+
+## Processed Data
+
+The data is processed heavily to convert everything to relevant boolean features. 
+
+In total there end up being over `980,000` rows and `120` features in the cleaned data set.
+
+The cleaning process is as follows:
+
+### 1. Load CSV Files
+
+Open the CSV Files and merge them together
+
+There should be a row for each career fair for every student. If the student never attended a career fair, there will be a row with all null values for that student.
+
+The `appointment_df` only contains rows for students that have appointments. There can only be one row per student however, so we will just need to merge the appointment data with the student data to ensure that we have a row for each student.
+
+The `registration_df` contains a row for each student that has registered for each career fair. There may be multiple rows for each student. We want a row for every student for every career fair, so we will need to merge the registration data with the student data.
+
+To ensure that we have a row for each student for each career fair, we get the cross product of the student ids and career fair dates and merge that with the merged data. This ensures there is a row for each student for each career fair. Then, we merge the registration data with all that to add the registration columns to the merged data.
+
+Merge career fair name and date to ensure that we have a unique identifier for each career fair (some have the same name but different dates
+
+### 2. Null Values
+
+Fill all null values in "Yes/No" columns with "No"
+
+Fill all count columns with 0
+
+Fill all null colleges with "No College Designated"
+
+Convert all "Yes/No" values to 1/0
+
+### 3. Integer Conversion
+
+The data contained some numerical strings in the format "1,000". These are converted to integers like 1000 
+
+Then, convert all the numerical values to binary values based on threshold values for:
+
+- Appointments
+- Applications
+- Logins
+- Attendances
+- Work Experiences
+- Learning Experiences
+
+### 4. Fair Attendance Cleaning
+
+`stu_fair_attendance_df` contains a row for each career fair for each student that attended that career fair. We want to count the number of fairs before the fair date for each student and merge that with the student data.
+
+For every row in the data, we want to lookup and count the number of fairs that the student attended before the career fair date for that row.
+
+Process:
+
+1. Get the cross product of the fair attendances and career fair dates to get a row for each attendance for each career fair.
+2. Filter out the attendances that are after the career fair date to get the attendances that are before the career fair date.
+3. Separate into main career fair and other career fair attendances. (main career fairs are the ones we are predicting)
+4. Group by student id and career fair date and count the number of attendances before the career fair date.
+5. Merge the counts with the data and fill null values with 0.
+6. Convert the counts to binary values.
+
+### 5. Event Attendance Cleaning
+
+`stu_event_attendance_df` contains a row for each event for each student that attended that event. We want to count the number of events before the career fair date for each student and merge that with the student data.
+
+Unlike the career fair attendance where we counted past attendance, we also want to consider the category of the event. Each event may have multiple categories.
+
+Possible Event Categories:
+
+- Academic
+- Career fairs
+- Conference
+- Employers
+- General
+- Guidance
+- Hiring
+- Networking
+
+We also want to consider specifically career fair prep sessions because they are likely to be more relevant to the career fair.
+
+Process:
+
+1. Get the cross product of the event attendances and career fair dates
+2. Filter out the attendances that are after the career fair date
+3. Separate categories into different dataframes
+4. Separate career fair prep sessions into a separate dataframe
+5. For each dataframe, group by student id and career fair date and count the number of attendances.
+6. For the career fair prep session dataframe, add a boolean for whether that attendance/event is for that upcoming career fair (this can be determined as whether the event is within a month)
+7. Merge the counts with the data and fill null values with 0.
+8. Convert the counts to binary values.
+
+### 6. Date Conversion
+
+Date values are converted to boolean values based on certain thresholds like:
+
+- How many years the account was created before or after the career fair
+- How many days before the career fair the student logged into their Handshake account
+- How many years until graduation relative to the career fair date
+
+### 7. School Year Cleaning
+
+Convert school year to a binary value. `stu_school_year` is a list of school years.
+
+- Freshman
+- Sophomore
+- Junior
+- Senior
+- Alumni
+- Masters
+- Doctorate
+
+### 8. College Cleaning
+
+- Business
+- Health
+- Engineering
+- Education
+- Arts
+- No College
+- Other
+
+### 9. Majors Cleaning
+
+Since there are so many majors and colleges are already considered, the majors are cleaned by checking whether the student's major is included in the majors specified by employers at the career fair (i.e., whether the career fair includes the student's major)
+
+### 10. Appointments Cleaning
+
+Convert appointment list to whether or not the student has had certain appointment types and drop the original `appointment_types` column since we only need the binary values.
+
+Appointment Types included: Walk-Ins, Resume Reviews, Career Fair Preparation, Career Exploration, Internship/Job Search, and Other.
+
+### 11. GPA Cleaning
+
+Convert to a range that the student's gpa falls in:
+
+- 1.0 or below
+- 1.0–1.5
+- 1.5–2.0
+- 2.0–2.5
+- 2.5–3.0
+- 3.0–3.5
+- 3.5–4.0
 
 ## Model
 
-Currently using a decision tree model, but considering trying out a random forest model as well
+I first tried out a decision tree model to predict whether or not a student will attend a career fair. The model was trained on this student data without any consideration of time dependencies or memory specific to that student. The model was then trained and tested on the same data to see how well it performed. I then used some hyperparameter optimizations to find the most optimal configuration.
 
-## First Implementation
+After training the model in this way, I wanted to perform a practical test, so the most recent career fair data was removed from the training data and added to a validation data set. The model fit the training data fairly well (F1: 0.8), but struggled significantly more with the new unknown data (F1: 0.35).
 
-The first implementation of the model uses the basic student data to predict whether or not a student will attend a career fair. The model is trained on this student data without any consideration for time dependencies or information specific to that student. The model is then tested on the same data to see how well it performs.
+I eventually decided to switch over to a random forest model after doing some research, because I learned that the use of multiple decision trees to make a prediction can help to solve the overfitting problem.
 
-### Data Cleaning
+## Hyperparameters
 
-- Yes/No values are converted to 1/0
-- Null values are filled with 0
-- Strings are converted to numerical values
-- Dates converted to years
-- Categorical data is converted to dummy variables
-- Data is split into training and testing sets (test size = 0.2)
+I tried a lot of different hyperparameters to optimize the performance of the model, implementing a `GridSearchCV` to test out many options quickly. In the end I found that the following hyperparamters performed the best consistently
 
-### Hyperparamters
+```
+max_depth: None,
+min_samples_leaf: 1,
+min_samples_split: 8,
+n_estimators: 3
+```
 
-- Entropy is used as the criterion
-- The maximum depth of the tree is 5
-- The minimum number of samples required to split an internal node is 2
-- The minimum number of samples required to be at a leaf node is 1
-- No minimum weight fraction required to be a leaf node
-- No minimum impurity decrease required to split an internal node
-- No maximum leaf nodes
-- No maximum features
-- All classes are weighted equally
-- Choosing the best split
+With more time, I would like to try out a wider spread of hyperparameters. With how long it takes for the model to train, especially when multiple parameters are being tested at once, I didn't end up having a lot of time to try out a wide spread of parameters. There were many parameters that I did not end up trying anything other than default values because of this so there may be significant room for improvement given more time.
 
-### Results
+## Results
 
-![](https://i.imgur.com/05GEzum.png)
+### Test Results
 
-In 5 tests of training the model, the average metrics are as follows:
+The model predicted student attendance for the 2024 Winter Career Fair with the following metrics:
 
-- Mean Squared Error: 0.0411
-- Accuracy: 0.9589
-- F1 Score: 0.8028
-- Recall: 0.8095
-- Precision: 0.7963
+- Mean Squared Error: `0.0071`
+- Accuracy: `0.9929`
+- F1 Score: `0.6281`
+- Recall: `0.4875`
+- Precision: `0.8824`
 
-The model has a high accuracy and low mean squared error, but the F1 score is lower than desired. This is likely due to the class imbalance in the data. The model is predicting that most students will not attend a career fair, which is accurate, but it is not predicting that many students will attend a career fair, which is not accurate. This is likely due to the fact that the model is not taking into account any information specific to the student or any time dependencies in the data.
+### Feature Importance Rankings
 
-## Second Implementation
+Below are the ranked feature importances. These show the weight that the model assigned to each feature.
 
-In the first implementation we used the entire data set to both train and test the model. This is not realistic because in practice we would not have access to the data for the career fair we are trying to predict attendance for. In the second implementation we will split the data up into two separate test data sets, one for evaluating the model and one for testing the model with new data. We do this to simulate a real world scenario to see if the model can apply to new data.
+Clearly, students who pre-register for the career are significantly more likely to attend. This stresses the importance of propoting pre-registration to boost attendance rates
 
-### Issues
+The next most important predictor is whether the student graduated 4 or more years after the career fair. This makes sense because those alumni are probably significantly less likely to attend, so it becomes a good indicator
 
-Since the data is split into two separate data sets the features of the training and testing sets will be different. For example, with categorical data like majors if a major appears in the training dataset but not in the testing dataset (i.e., there was no student in winter 2024 with that same major), there will be a feature mismatch which causes an error.
+Next is the timing of the profile creation (ranks 3, 7, and 34). Profiles created closer to the career fair date are easier to predict. The direction of this is unclear — are students who created their account closer to the career fair date more likely or less likely to attend? This would be a good data point to look deeper into.
 
-To overcome this, feature alignment had to be implemented. This goes through each feature of the two datasets and adds any missing from the other so the features are the same and can be compared.
+Students with more applications and past attendances (ranks 4, 8, 19, 23, 33) tend to be easier for the model to predict attendance. This suggests that the level of a students engagement is a good indicator for career fair attendance.
 
-### Data Cleaning
+Higher GPA (ranks 10, 14, 30, 41, 47, 71) have higher importances according to the model. This could indicate that high-achieving students are more likely to attend career fairs. 
 
-- The data is split into two separate data sets, one for training and one for practical testing
-- The training data contains all career fair attendance data up to the 2024 winter career fair
-- The practical testing data contains the career fair attendance data for the 2024 winter career fair
-- The training and testing data are cleaned in the same way as the first implementation, then feature aligned
-- The training data is split into training and testing sets (test size = 0.2)
+Students with work experience, especially multiple, are a good indicator for their attendance
 
-### Hyperparameters
+The student's field of study is also a significant indicator. With business students having the highest importance (rank 5), engineering (rank 24), arts (rank 27), education (52), and health (54). This could give insight into what groups should be targeted more. Business and engineering students are already the biggest group that attends career fairs, so much so that a student being a business or engineering student makes it easier for the model to predict their attendance. Other groups are not so high, so this might indicate room for improvement.
 
-- The hyperparameters are the same as the first implementation
+There are many more takeaways that can come of these rankings and much more that this model could be used for within the scope of this project in the future.
 
-### Results
-
-![](https://i.imgur.com/xovOkSg.png)
-
-As we can see, the results with the training data are very similar to the first implementation. However, the model did not fit very well for the new data. With an accuracy of 0.5604, this is only slightly better than random chance.
-
-This could be due to the fact that the model is not taking into account any information specific to the student or any time dependencies in the data.
+```
+Rank                                  Feature Importance
+   1                       is_pre_registered    0.29719
+   2                   grad_4+_years_post_cf    0.02111
+   3                   created_1_year_pre_cf    0.01838
+   4                    has_10+_applications    0.01731
+   5                             is_business    0.01716
+   6                     grad_1_year_post_cf    0.01636
+   7                  created_2_years_pre_cf    0.01628
+   8                       has_0_attendances    0.01446
+   9                    grad_2_years_post_cf    0.01393
+  10                             gpa_3.5-4.0    0.01336
+  11         attended_0_past_guidance_events    0.01319
+  12                  has_2_work_experiences    0.01299
+  13                 has_3+_work_experiences    0.01249
+  14                             gpa_3.0-3.5    0.01238
+  15                 stu_is_profile_complete    0.01234
+  16                               is_alumni    0.01211
+  17                       stu_is_work_study    0.01210
+  18           attended_1_other_fairs_before    0.01162
+  19                    has_5-10_attendances    0.01161
+  20             attended_1_main_fair_before    0.01141
+  21           attended_0_other_fairs_before    0.01117
+  22            attended_0_main_fairs_before    0.01105
+  23                      has_1-2_attendance    0.01104
+  24                          is_engineering    0.01094
+  25                    has_1-5_appointments    0.01052
+  26                    grad_3_years_post_cf    0.01016
+  27                                 is_arts    0.01016
+  28                 has_walk_in_appointment    0.01014
+  29                  created_4_years_pre_cf    0.00990
+  30                             gpa_2.5-3.0    0.00978
+  31           has_resume_review_appointment    0.00972
+  32                   has_1_work_experience    0.00967
+  33                     has_10+_attendances    0.00943
+  34                  created_3_years_pre_cf    0.00930
+  35                   has_other_appointment    0.00925
+  36                       has_10-100_logins    0.00889
+  37                     login_7_days_pre_cf    0.00878
+  38                  has_0_work_experiences    0.00868
+  39                     has_3-5_attendances    0.00849
+  40                      has_0_applications    0.00833
+  41                   has_5-10_applications    0.00803
+  42                         has_1-10_logins    0.00765
+  43                               is_senior    0.00729
+  44         attended_1_past_guidance_events    0.00728
+  45                   has_5-10_appointments    0.00727
+  46                      has_0_appointments    0.00724
+  47                                  no_gpa    0.00714
+  48                              is_masters    0.00689
+  49                    has_1-5_applications    0.00663
+  50                         has_100+_logins    0.00660
+  51                  created_5_years_pre_cf    0.00630
+  52                            is_education    0.00622
+  53                 has_cf_prep_appointment    0.00619
+  54                               is_health    0.00612
+  55                      grad_1_year_pre_cf    0.00609
+  56                               is_junior    0.00590
+  57          attended_0_past_cf_prep_events    0.00576
+  58         attended_2_past_guidance_events    0.00534
+  59            attended_2_main_fairs_before    0.00503
+  60              has_job_search_appointment    0.00496
+  61                          stu_is_visible    0.00468
+  62        attended_1_past_employers_events    0.00468
+  63       attended_0_past_networking_events    0.00466
+  64                              no_college    0.00447
+  65       attended_1_past_networking_events    0.00445
+  66        attended_0_past_employers_events    0.00442
+  67           attended_2_other_fairs_before    0.00431
+  68               attended_career_fair_prep    0.00401
+  69                    login_30_days_pre_cf    0.00390
+  70        attended_3+_past_guidance_events    0.00385
+  71                             gpa_2.0-2.5    0.00381
+  72                   login_90+_days_pre_cf    0.00374
+  73                 has_learning_experience    0.00364
+  74          attended_3+_other_fairs_before    0.00362
+  75                            is_sophomore    0.00330
+  76                            is_doctorate    0.00317
+  77                    has_10+_appointments    0.00316
+  78          attended_1_past_cf_prep_events    0.00316
+  79      has_career_exploration_appointment    0.00309
+  80         attended_1_past_academic_events    0.00290
+  81         attended_0_past_academic_events    0.00287
+  82                    grad_4+_years_pre_cf    0.00280
+  83                           other_college    0.00242
+  84                             is_freshman    0.00212
+  85           attended_3+_main_fairs_before    0.00208
+  86                         stu_is_archived    0.00208
+  87                     grad_2_years_pre_cf    0.00166
+  88                             gpa_1.5-2.0    0.00153
+  89                            has_0_logins    0.00130
+  90      attended_3+_past_networking_events    0.00129
+  91                             gpa_1.0-1.5    0.00114
+  92        attended_2_past_employers_events    0.00111
+  93          attended_2_past_cf_prep_events    0.00106
+  94       attended_2_past_networking_events    0.00087
+  95           attended_1_past_hiring_events    0.00082
+  96                    login_90_days_pre_cf    0.00081
+  97           attended_0_past_hiring_events    0.00068
+  98                     grad_3_years_pre_cf    0.00064
+  99         attended_2_past_academic_events    0.00064
+ 100       attended_3+_past_employers_events    0.00058
+ 101                                 gpa_1.0    0.00053
+ 102                        stu_is_activated    0.00048
+ 103         attended_3+_past_cf_prep_events    0.00038
+ 104          attended_3+_past_hiring_events    0.00000
+ 105       attended_0_past_conference_events    0.00000
+ 108                       multiple_colleges    0.00000
+ 109       attended_2_past_conference_events    0.00000
+ 110        attended_3+_past_academic_events    0.00000
+ 113    attended_3+_past_career_fairs_events    0.00000    
+ 114     attended_1_past_career_fairs_events    0.00000    
+ 115     attended_0_past_career_fairs_events    0.00000    
+ 116         attended_3+_past_general_events    0.00000    
+ 117          attended_2_past_general_events    0.00000    
+ 118          attended_1_past_general_events    0.00000    
+ 119          attended_0_past_general_events    0.00000    
+ 120     attended_2_past_career_fairs_events    0.00000
+```
