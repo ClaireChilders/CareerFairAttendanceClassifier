@@ -275,7 +275,7 @@ def clean_data(
     # Convert any strings in the form '1,000' to integers
     #   while keeping existing integers
 
-    print(f'{Fore.LIGHTBLACK_EX}  → {Fore.BLUE}Converting numerical strings '
+    print(f'{Fore.LIGHTBLACK_EX}  → {Fore.BLUE}Converting numerical values '
           f'to binary values...{Style.RESET_ALL}')
 
     for column in count_columns:
