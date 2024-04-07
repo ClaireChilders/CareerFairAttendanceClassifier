@@ -932,7 +932,7 @@ def clean_data(
     # Check if any of the student's majors are included in the career fair's
     data['cf_has_major'] = data['stu_majors'].apply(
         lambda x: 1 if any(
-            [major in career_fair_df['majors'].values for major in x]) else 0
+            [major in career_fair_df['career_fair_majors'].values for major in x]) else 0
     )
 
     data.drop(['stu_majors'], axis=1, inplace=True)
