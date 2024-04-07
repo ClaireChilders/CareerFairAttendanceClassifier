@@ -31,7 +31,7 @@ cleaned_data = load_data()
 )
 
 # =============================================================================
-#                           Hyperparameter tuning
+#                           Hyperparameter Tuning
 # =============================================================================
 
 param_grid = {
@@ -51,33 +51,6 @@ grid_search = GridSearchCV(
     pre_dispatch='n_jobs/2'
 )
 
-
-def fit(model: GridSearchCV, *args, **kwargs):
-    class BarStdout:
-        def write(self, text):
-            if "totalling" in text and "fits" in text:
-                self.bar_size = int(
-                    text.split("totalling")[1].split("fits")[0][1:-1]
-                )
-                self.bar = tqdm(range(self.bar_size))
-                self.count = 0
-                return
-            if "CV" in text and hasattr(self, "bar"):
-                self.count += 1
-                self.bar.update(n=self.count-self.bar.n)
-                if self.count % (self.bar_size//10) == 0:
-                    time.sleep(0.1)
-
-        def flush(self, text=None):
-            pass
-    default_stdout = sys.stdout
-    sys.stdout = BarStdout()
-    model.verbose = 10
-    model.fit(*args, **kwargs)
-    sys.stdout = default_stdout
-    return model
-
-
 cleaned_data.drop(
     columns=['career_fair_name'],
     axis=1,
@@ -88,8 +61,6 @@ x_train, x_val, y_train, y_val = train_test_split(
     features, target, test_size=0.2, random_state=42
 )
 
-
-# fit(grid_search, x_train, y_train)
 grid_search.fit(x_train, y_train)
 
 print(grid_search.best_params_)
@@ -158,44 +129,3 @@ for f in range(x_train.shape[1]):
           f'{name_color}{features.columns[indices[f]]: >40} '
           f'{val_color}{importances[indices[f]]: >10.5f}'
           f'{Style.RESET_ALL}')
-
-exit()
-
-# =============================================================================
-#                           Output results
-# =============================================================================
-
-y_pred = best_model.predict(x_test)
-mse = mean_squared_error(y_test, y_pred)
-accuracy = accuracy_score(y_test, y_pred)
-f1 = f1_score(y_test, y_pred)
-recall = recall_score(y_test, y_pred)
-precision = precision_score(y_test, y_pred)
-
-print(Fore.CYAN + "\nResults:" + Style.RESET_ALL)
-print(f"  Mean squared error: {mse}")
-print(f"  Accuracy: {accuracy}")
-print(f"  F1 score: {f1}")
-print(f"  Recall: {recall}")
-print(f"  Precision: {precision}")
-
-# =============================================================================
-#                           Evaluate practical test
-# =============================================================================
-
-y_pred = best_model.predict(x_practical_test)
-mse = mean_squared_error(y_practical_test, y_pred)
-accuracy = accuracy_score(y_practical_test, y_pred)
-f1 = f1_score(y_practical_test, y_pred)
-recall = recall_score(y_practical_test, y_pred)
-precision = precision_score(y_practical_test, y_pred)
-
-positive_predicted = sum(y_pred)
-
-print(Fore.CYAN + "\nPractical test results:" + Style.RESET_ALL)
-print(f"  Mean squared error: {mse}")
-print(f"  Accuracy: {accuracy}")
-print(f"  F1 score: {f1}")
-print(f"  Recall: {recall}")
-print(f"  Precision: {precision}")
-print(f"  Total positive predicted: {positive_predicted}")
