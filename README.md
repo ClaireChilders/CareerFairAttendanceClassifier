@@ -2,11 +2,14 @@
 
 **Claire Childers** — Career Fair Attendance Classifier using Decision Trees and Random Forest
 
-> [!important] See the code here: <https://github.com/ClaireChilders/CareerFairAttendanceClassifier>
+> [!IMPORTANT]
+> See the code here: <https://github.com/ClaireChilders/CareerFairAttendanceClassifier>
 
-> [!note] `random_forest.py` holds the models training code and `preprocessing.py` defines the data preprocessing methods
+> [!NOTE]
+> `random_forest.py` holds the models training code and `preprocessing.py` defines the data preprocessing methods
 
-> [!warning] The data used in this project is not included in the code because it holds sensitive student identifiers that is not permitted to be shared.
+> [!WARNING]
+> The data used in this project is not included in the code because it holds sensitive student identifiers that is not permitted to be shared.
 
 This project aims to utilize machine learning techniques (Decision Tree and Random Forest) to predict student attendance at upcoming career fairs. Through collaboration with the Oakland University Career and Life Design Center, extensive student engagement data from Handshake was utilized to train and evaluate the model's performance. 
 
