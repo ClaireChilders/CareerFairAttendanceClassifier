@@ -1,3 +1,5 @@
+# Career Fair Attendance Classifier
+
 **Claire Childers** — Career Fair Attendance Classifier using Decision Trees and Random Forest
 
 > [!important] See the code here: <https://github.com/ClaireChilders/CareerFairAttendanceClassifier>
