@@ -1,29 +1,39 @@
-# CareerFairAttendanceClassifier
+**Claire Childers** — Career Fair Attendance Classifier using Decision Trees and Random Forest
 
-This project includes a practical implementation of machine learning. Through collaboration with the Oakland University Career and Life Design Center to gather student engagement data, this model uses a vast set of student Handshake data to train a model to predict whether students will attend an upcoming career fair.
+> [!important] See the code here: <https://github.com/ClaireChilders/CareerFairAttendanceClassifier>
 
-The goal of this model is not only to predict attendance however. One of the main takeaways is to determine what factors are most important in determining whether a student will attend a career fair and to gather any insights we can to help determine how to increase future fair attendance.
+> [!note] `random_forest.py` holds the models training code and `preprocessing.py` defines the data preprocessing methods
+
+> [!warning] The data used in this project is not included in the code because it holds sensitive student identifiers that is not permitted to be shared.
+
+This project aims to utilize machine learning techniques (Decision Tree and Random Forest) to predict student attendance at upcoming career fairs. Through collaboration with the Oakland University Career and Life Design Center, extensive student engagement data from Handshake was utilized to train and evaluate the model's performance. 
+
+This project not only focuses on predicting attendance, but also aims to uncover key factors influencing students' decisions to attend career fairs, providing valuable insights to future strategies to increase attendance rates.
+
+---
 
 ## Idea
 
-Create a machine learning model to predict whether students will attend an upcoming career fair or not
+The main idea is to develop a machine learning model capable of predicting whether students would attend a career fair or not, based on various features extracted from student data.
 
 ## Outcomes
 
-Determine what factors are most influential in determining whether a student will attend a career fair or not
+The main outcomes are to identify the most influential factors determining student attendance at career fairs, providing actionable insights to improve future attendance rates.
 
 ## Process
 
-1. Gather Relevant Data
-2. Process data to include relevant information
-3. Split data into train, test, and validation sets
-4. Experiment with different algorithms, models, and hyperparameters to find the model best fit for this task with the highest performance
-5. Assess the performance of the model with metrics like accuracy, precision, recall, and F1-score.
-6. Fine-tune the model based on observations
-7. Determine what features to add or remove to improve performance of model
-8. Report the most important features
+The project process involves several steps:
+
+1. **Data Gathering**: Relevant student data, including Handshake activity and event attendance, along with career fair registration data is collected
+2. **Data Processing**: Extensive data cleaning and feature engineering are performed to prepare the dataset for modeling. This includes handling null values, converting data types, and creating/adding binary features
+3. **Model Selection and Training**: Initially, a Decision Tree model was trained and optimized, but the model was later switched to a Random Forest model for its ability to mitigate overfitting
+4. **Hyperparameter Tuning**: Test various hyperparameters using GridSearchCV to optimize model performance
+5. **Evaluation**: Assess the model using metrics like accuracy, precision, recall, and F1-score
+6. **Feature Importance Analysis**: Generate feature importance rankings to determine the most and least significant predictors of attendance
 
 ## Relevant Data
+
+The dataset included various student attributes, event attendance records, career fair data, and registration information, providing a comprehensive view of student engagement.
 
 ### Student Data
 
@@ -80,13 +90,11 @@ Determine what factors are most influential in determining whether a student wil
 - `career_fair_name`
 - `career_fair_date`
 
+---
+
 ## Processed Data
 
-The data is processed heavily to convert everything to relevant boolean features. 
-
-In total there end up being over `980,000` rows and `120` features in the cleaned data set.
-
-The cleaning process is as follows:
+The raw data undergoes extensive preprocessing, including null value handling, integer conversion, date conversion, and feature engineering, resulting in a cleaned dataset with over 980,000 rows and 120 features.
 
 ### 1. Load CSV Files
 
@@ -100,7 +108,7 @@ The `registration_df` contains a row for each student that has registered for ea
 
 To ensure that we have a row for each student for each career fair, we get the cross product of the student ids and career fair dates and merge that with the merged data. This ensures there is a row for each student for each career fair. Then, we merge the registration data with all that to add the registration columns to the merged data.
 
-Merge career fair name and date to ensure that we have a unique identifier for each career fair (some have the same name but different dates
+Merge career fair name and date to ensure that we have a unique identifier for each career fair (some have the same name but different dates)
 
 ### 2. Null Values
 
@@ -222,6 +230,8 @@ Convert to a range that the student's gpa falls in:
 - 3.0–3.5
 - 3.5–4.0
 
+---
+
 ## Model
 
 I first tried out a decision tree model to predict whether or not a student will attend a career fair. The model was trained on this student data without any consideration of time dependencies or memory specific to that student. The model was then trained and tested on the same data to see how well it performed. I then used some hyperparameter optimizations to find the most optimal configuration.
@@ -243,6 +253,8 @@ n_estimators: 3
 
 With more time, I would like to try out a wider spread of hyperparameters. With how long it takes for the model to train, especially when multiple parameters are being tested at once, I didn't end up having a lot of time to try out a wide spread of parameters. There were many parameters that I did not end up trying anything other than default values because of this so there may be significant room for improvement given more time.
 
+---
+
 ## Results
 
 ### Test Results
@@ -256,6 +268,15 @@ The model predicted student attendance for the 2024 Winter Career Fair with the 
 - Precision: `0.8824`
 
 ### Feature Importance Rankings
+
+Analysis of feature importances revealed a few main insights:
+
+- Pre-registration significantly increased attendance likelihood, highlighting the importance of promoting pre-registration to boost attendance rates
+- Graduation timing and profile creation proximity to career fair date were significant predictors
+- Higher engagement levels (indicated by application and past attendance counts), correlated with higher attendance likelihood
+- GPA, work experience, and field of study were also influential factors to determining career fair attendance
+
+### Comprehensive Feature Analysis
 
 Below are the ranked feature importances. These show the weight that the model assigned to each feature.
 
@@ -394,3 +415,17 @@ Rank                                  Feature Importance
  119          attended_0_past_general_events    0.00000    
  120     attended_2_past_career_fairs_events    0.00000
 ```
+
+---
+
+## Conclusion
+
+The Career Fair Attendance Classifier project successfully developed a predictive model to forecast student attendance at career fairs. By identifying critical determinants of attendance, such as pre-registration and engagement levels, the project provides actionable insights for enhancing future attendance rates and optimizing student engagement strategies.
+
+## Future Directions
+
+Potential future avenues include refining model hyperparameters further, trying out additional features, and integrating real-time data for continuous model improvements. 
+
+Additionally, other types of models could be used to improve the shortcomings of Decision Tree and Random Forest. A Recurrent Neural Network could be tried out to capture the sequential/time-dependent relationship among data. RNNs work well with sequential data and could capture patterns in career fair attendance. By considering the sequential nature of events leading up to a career fair (appointments, career fair prep events, etc.). Taking this into account with a RNN could improve prediction accuracy. RNNs can also handle both long-term and short-term dependencies. Random Forest might struggle with this, but RNNs excel at accounting for these types of structures. The nature of student engagement data could fit well for an RNN model, but would require further investigation.
+
+Finally, the model's insights can inform targeted action that the Oakland University Career and Life Design Center can take to encourage attendance among specific groups of students, improving the attendance of future career fairs.
